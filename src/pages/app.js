@@ -1,13 +1,13 @@
+import React from "react";
+import { DataProvider } from "../context/DataContext";
 
-
-import React from 'react';
-import { AppProvider } from '../AppContext';
+import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <AppProvider>
+    <DataProvider>
       <Component {...pageProps} />
-    </AppProvider>
+    </DataProvider>
   );
 }
 
