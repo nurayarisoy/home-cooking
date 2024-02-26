@@ -1,7 +1,7 @@
-import React from "react";
-import { DataProvider } from "../context/DataContext";
-
-import "../styles/globals.css";
+// pages/_app.js
+import React from 'react';
+import { DataProvider } from '../context/DataContext';
+import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
   return (
