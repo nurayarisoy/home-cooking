@@ -1,11 +1,13 @@
 // pages/index.js
 import React from 'react';
+import Navbar from '../componets/Navbar';
 
 const HomePage = () => {
   return (
     <div>
+      <Navbar />
       <h1>Home Page</h1>
-      {/* Sayfa içeriği */}
+      <p>Welcome to my website!</p>
     </div>
   );
 };

@@ -1,7 +1,8 @@
 // components/Navbar.js
-import React from 'react';
-
+import React, { useContext } from 'react';
+import { DataContext } from '../context/DataContext';
 const Navbar = () => {
+    const { userData } = useContext(DataContext);
   return (
     <nav className="bg-blue-500 p-6">
       <div className="container mx-auto flex items-center justify-between">
