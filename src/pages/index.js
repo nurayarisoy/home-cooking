@@ -7,7 +7,7 @@ const HomePage = () => {
     <div>
       <Navbar />
       <h1>Home Page</h1>
-      <p>Welcome to my website!</p>
+      <p>Welcome to my website! selam</p>
     </div>
   );
 };
