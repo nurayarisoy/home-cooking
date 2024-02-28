@@ -1,6 +1,7 @@
 // pages/index.js
 import React from 'react';
-import Navbar from '../componets/Navbar';
+import Navbar from '../components/Navbar';
+import 'tailwindcss/tailwind.css';
 
 const HomePage = () => {
   return (

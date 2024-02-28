@@ -2,7 +2,7 @@
 import React from 'react';
 import { DataProvider } from '../context/DataContext';
 import '../styles/globals.css';
-import Navbar from '../componets/Navbar';
+import Navbar from '../components/Navbar';
 
 
 function MyApp({ Component, pageProps }) {
