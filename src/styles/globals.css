@@ -1,3 +1,43 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.content {
+    width: 600px; /* Video genişliği */
+    height: 300px; /* Video yüksekliği */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Gölge rengi ve boyutu */
+  }
+  .container {
+    position: relative;
+  }
+  
+  nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 200px; /* Navbar genişliği */
+    height: 100vh; /* Navbar yüksekliği */
+    background-color: #fff; /* Navbar arka plan rengi */
+    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3); /* Navbar gölgesi */
+    transition: width 0.5s; /* Geçiş efekti */
+  }
+  
+  .container:hover nav {
+    width: 300px; /* Navbar genişliğinin hover durumunda değiştirilmesi */
+  }
+  
+  .content {
+    margin-right: 200px; /* Navbar genişliği kadar sağdan içerikten boşluk bırak */
+    /* İçerikle ilgili diğer stillendirme */
+  }
+  
+  footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100%; /* Footer genişliği */
+    height: 100px; /* Footer yüksekliği */
+    background: linear-gradient(to right, #ff8c00, #ffc0cb); /* Yumuşak renk geçişi */
+    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3); /* Footer gölgesi */
+  }
+  
