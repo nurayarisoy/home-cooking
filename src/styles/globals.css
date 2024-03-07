@@ -6,18 +6,22 @@
     width: 600px; /* Video genişliği */
     height: 300px; /* Video yüksekliği */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Gölge rengi ve boyutu */
-  }
+    margin-top: calc(50vh - 150px); /* Yukarıdan ortalamak için */
+    margin-bottom: calc(50vh - 150px); /* Aşağıdan ortalamak için */
+    border-radius: 10px; /* Kenar yumuşatma */
+}
   .container {
     position: relative;
   }
   
-  nav {
+  navbar {
     position: fixed;
-    top: 0;
+   bottom: 0;
     right: 0;
-    width: 200px; /* Navbar genişliği */
-    height: 100vh; /* Navbar yüksekliği */
-    background-color: #fff; /* Navbar arka plan rengi */
+    width: 100%; /* Footer genişliği */
+    height: 100px; /* Footer yüksekliği */
+    background: linear-gradient(to right, #a37843, #0a0a0a); /* Yumuşak renk geçişi */
+    
     box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3); /* Navbar gölgesi */
     transition: width 0.5s; /* Geçiş efekti */
   }
