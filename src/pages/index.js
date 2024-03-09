@@ -1,25 +1,16 @@
 // pages/index.js
-import React from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer'; // Footer bileşenini import edin
-import 'tailwindcss/tailwind.css';
+import Layout from '../components/layout/Layout';
 
 const HomePage = () => {
   return (
-    <div>
-      <Navbar />
-     
-      <div>
-      <div class="content">
-    <video controls>
+    <Layout>
+      <h1>Hoş Geldiniz!</h1>
+      {/* Diğer içeriği ve resmi buraya ekleyin */}
+      <video controls>
       <source src="/video.mp4" type="video/mp4" />
       Tarayıcınız video etiketini desteklemiyor.
     </video>
-    </div>
-  </div>
- 
-      <Footer /> {/* Footer bileşenini ekleyin */}
-    </div>
+    </Layout>
   );
 };
 

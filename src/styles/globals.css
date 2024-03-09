@@ -1,52 +1,23 @@
+/* Reset CSS Tailwind ile uyumlu hale getirilmiş */
 @tailwind base;
+
+/* Genel stiller Tailwind utility class'ları ile belirlenmiş */
 @tailwind components;
+
+/* Ekstra stiller Tailwind utility class'ları ile belirlenmiş */
 @tailwind utilities;
 
-.content {
-    width: 600px; /* Video genişliği */
-    height: 300px; /* Video yüksekliği */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Gölge rengi ve boyutu */
-    margin-top: calc(50vh - 150px); /* Yukarıdan ortalamak için */
-    margin-bottom: calc(50vh - 150px); /* Aşağıdan ortalamak için */
-    border-radius: 10px; /* Kenar yumuşatma */
+/* Özelleştirilmiş stiller */
+/* Örneğin, sayfa arka planı */
+html, body {
+  @apply bg-gray-100; /* Tailwind'in arka plan gri renk utility class'ını kullan */
 }
-  .container {
-    position: relative;
-  }
-  
-  .navbar {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100px;
-    background: linear-gradient(to right, #a37843, #0a0a0a);
-    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
-    transition: width 0.5s;
-  }
-  
-  /* Hover durumunda genişlik değişimi */
-  .navbar:hover {
-    width: 300px;
-  }
-  
-  
-  .container:hover nav {
-    width: 300px; /* Navbar genişliğinin hover durumunda değiştirilmesi */
-  }
-  
-  .content {
-    margin-right: 200px; /* Navbar genişliği kadar sağdan içerikten boşluk bırak */
-    /* İçerikle ilgili diğer stillendirme */
-  }
-  
-  footer {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 100%; /* Footer genişliği */
-    height: 100px; /* Footer yüksekliği */
-    background: linear-gradient(to right, #ff8c00, #ffc0cb); /* Yumuşak renk geçişi */
-    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3); /* Footer gölgesi */
-  }
-  
+
+/* Linklerin rengi ve alt çizgisi */
+a {
+  @apply text-gray-700; /* Tailwind'in metin gri renk utility class'ını kullan */
+}
+
+a:hover {
+  @apply underline; /* Tailwind'in alt çizgi utility class'ını kullan */
+}
