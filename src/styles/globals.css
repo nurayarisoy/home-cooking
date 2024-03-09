@@ -14,17 +14,22 @@
     position: relative;
   }
   
-  navbar {
+  .navbar {
     position: fixed;
-   bottom: 0;
+    bottom: 0;
     right: 0;
-    width: 100%; /* Footer genişliği */
-    height: 100px; /* Footer yüksekliği */
-    background: linear-gradient(to right, #a37843, #0a0a0a); /* Yumuşak renk geçişi */
-    
-    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3); /* Navbar gölgesi */
-    transition: width 0.5s; /* Geçiş efekti */
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(to right, #a37843, #0a0a0a);
+    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
+    transition: width 0.5s;
   }
+  
+  /* Hover durumunda genişlik değişimi */
+  .navbar:hover {
+    width: 300px;
+  }
+  
   
   .container:hover nav {
     width: 300px; /* Navbar genişliğinin hover durumunda değiştirilmesi */

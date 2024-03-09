@@ -8,11 +8,14 @@ const HomePage = () => {
   return (
     <div>
       <Navbar />
+     
+      <div>
       <div class="content">
     <video controls>
       <source src="/video.mp4" type="video/mp4" />
       Tarayıcınız video etiketini desteklemiyor.
     </video>
+    </div>
   </div>
  
       <Footer /> {/* Footer bileşenini ekleyin */}
