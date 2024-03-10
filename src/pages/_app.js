@@ -7,15 +7,18 @@ import Navbar from '../components/navbar/Navbar';
 import Footer from'../components/footer/Footer';
 import Layout from'../components/layout/Layout';
 
-
 function MyApp({ Component, pageProps }) {
   return (
     <DataProvider>
-      {/* Navbar bileşenini DataProvider bileşeninin içine ekleyin */}
+      {/* Navbar bileşenini sayfa içeriğinin üstüne ekleyin */}
       <Navbar />
+      {/* Layout bileşenini Navbar ve Footer bileşenleri arasına yerleştirin */}
+      <Layout>
+        {/* Diğer bileşenler */}
+        <Component {...pageProps} />
+      </Layout>
+      {/* Footer bileşenini sayfa içeriğinin altına ekleyin */}
       <Footer />
-      <Layout />
-      <Component {...pageProps} />
     </DataProvider>
   );
 }
