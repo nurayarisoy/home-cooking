@@ -6,7 +6,7 @@ const CustomerLoginPage = () => {
   return (
     <div>
       <Navbar /> {/* Navbar bileşenini ekleyin */}
-      <h1>Customer Login</h1>
+      <h1>Chef Login</h1>
       {/* Diğer içeriği buraya ekleyin */}
     </div>
   );

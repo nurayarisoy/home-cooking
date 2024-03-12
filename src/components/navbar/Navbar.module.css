@@ -1,0 +1,12 @@
+/* Navbar için Tailwind CSS sınıfları */
+.navbar {
+  @apply bg-red-500;
+}
+
+.logo {
+  @apply text-gray-900 text-lg font-bold no-underline;
+}
+
+.link {
+  @apply text-white ml-4 no-underline;
+}
