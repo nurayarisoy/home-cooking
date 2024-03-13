@@ -1,8 +1,8 @@
 /* form.css */
 .custom-form {
-    max-width: 30rem;
-    margin: 0 auto;
-  }
+  @apply max-w-30rem bg-blue-500;
+  margin: 0 auto;
+}
   
   .custom-button {
     background-color: #3490dc;
