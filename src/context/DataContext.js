@@ -12,3 +12,4 @@ export const DataProvider = ({ children }) => {
     </DataContext.Provider>
   );
 };
+
