@@ -1,0 +1,19 @@
+/* form.css */
+.custom-form {
+    max-width: 30rem;
+    margin: 0 auto;
+  }
+  
+  .custom-button {
+    background-color: #3490dc;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+  
+  .custom-button:hover {
+    background-color: #2779bd;
+  }
+  
