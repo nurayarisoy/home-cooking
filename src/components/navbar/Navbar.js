@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styles from './Navbar.module.css';
 
 const Navbar = () => {
@@ -5,11 +6,17 @@ const Navbar = () => {
     <nav className={styles.navbar}>
       <div className="container mx-auto flex justify-between items-center py-4">
         <div>
-          <a href="/" className={styles.logo}>Home Cooking</a>
+          <Link href="/">
+            Home Cooking
+          </Link>
         </div>
         <div>
-          <a href="/customer-login" className={styles.link}>Login as Customer</a>
-          <a href="/chef-login" className={styles.link}>Login as Chef</a>
+          <Link href="pages/customer/login">
+            Login as Customer
+          </Link>
+          <Link href="pages/chef/login">
+            Login as Chef
+          </Link>
         </div>
       </div>
     </nav>
