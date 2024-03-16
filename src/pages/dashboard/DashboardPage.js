@@ -1,6 +1,6 @@
 // pages/dashboard/DashboardPage.js
 import React from 'react';
-import Navbar from '@/src/components/navbar/Navbar';
+import Navbar from '@/src/components/navbar/WhiteNavbar';
 const DashboardPage = () => {
   return (
     <div>

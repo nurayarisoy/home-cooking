@@ -1,12 +1,14 @@
 // pages/login/LoginPage.js
 import React from 'react';
-import Navbar from '../../components/navbar/Navbar';
-import styles from './Login.css'; // Login.css dosyasını doğru yoldan içe aktarın
+import WhiteNavbar from '../../components/navbar/WhiteNavbar';
+
+import styles from './LoginPage.css'; // Login.css dosyasını doğru yoldan içe aktarın
+import './Login.css';
 
 const ChefLoginPage = () => {
   return (
     <div>
-      <Navbar /> {/* Navbar bileşenini ekleyin */}
+      <WhiteNavbar /> {/* Navbar bileşenini ekleyin */}
       <h1>Chef Login</h1>
       <form className={styles['custom-form']}>
         {/* Kullanıcı adı ve şifre alanları */}

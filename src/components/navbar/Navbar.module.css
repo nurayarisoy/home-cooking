@@ -1,12 +1,22 @@
-/* Navbar için Tailwind CSS sınıfları */
+/* Navbar.module.css */
+
 .navbar {
-  @apply bg-red-500;
+  background-color: #333;
+  color: #fff;
 }
 
-.logo {
-  @apply text-gray-900 text-lg font-bold no-underline;
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.link {
-  @apply text-white ml-4 no-underline;
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 10px;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
 }

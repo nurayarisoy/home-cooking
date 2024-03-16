@@ -1,11 +1,12 @@
 // pages/index.js
 import Layout from '../components/layout/Layout';
-import Navbar from '../components/navbar/Navbar';
+import WhiteNavbar from '../components/navbar/WhiteNavbar';
+
 
 const HomePage = () => {
   return (
     <Layout>
-     <Navbar />
+     <WhiteNavbar />
       {/* Diğer içeriği ve resmi buraya ekleyin */}
       <video controls>
       <source src="/video.mp4" type="video/mp4" />
