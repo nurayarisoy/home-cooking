@@ -1,4 +1,6 @@
 /* Reset CSS Tailwind ile uyumlu hale getirilmiş */
+@import 'tailwindcss/tailwind.css';
+
 @tailwind base;
 
 /* Genel stiller Tailwind utility class'ları ile belirlenmiş */
