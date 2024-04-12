@@ -3,8 +3,7 @@
 
 import React from 'react';
 import { DataProvider } from '../context/DataContext';
-import '../styles/globals.css'; // Tailwind CSS global stil dosyasını ekleyin
-import 'tailwindcss/tailwind.css';
+import '../styles/global.css'; // Tailwind CSS global stil dosyasını ekleyin
 import 'bootstrap/dist/css/bootstrap.min.css';
 import WhiteNavbar from '../components/navbar/WhiteNavbar';
 import Footer from '../components/footer/Footer';
@@ -23,6 +22,8 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp;
+
+
 
 
 
