@@ -1,29 +1,20 @@
 // pages/_app.js
 
-
-import React from 'react';
-import { DataProvider } from '../context/DataContext';
-import '../styles/global.css'; // Tailwind CSS global stil dosyasını ekleyin
-import 'bootstrap/dist/css/bootstrap.min.css';
+import '../../styles/global.css' // Doğru dosya yolu
 import WhiteNavbar from '../components/navbar/WhiteNavbar';
 import Footer from '../components/footer/Footer';
-import Layout from '../components/layout/Layout';
 
 function MyApp({ Component, pageProps }) {
   return (
-    <DataProvider>
+    <div className="flex flex-col min-h-screen">
       <WhiteNavbar />
-      <Layout>
+      <main className="flex-grow flex items-center justify-center bg-white">
         <Component {...pageProps} />
-      </Layout>
+      </main>
       <Footer />
-    </DataProvider>
+    </div>
   );
 }
 
 export default MyApp;
-
-
-
-
 
