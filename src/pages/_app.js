@@ -1,6 +1,6 @@
 // pages/_app.js
 
-import '../../styles/globals.css' // Doğru dosya yolu
+import '../../styles/tailwind.css' // Doğru dosya yolu
 import WhiteNavbar from '../components/navbar/WhiteNavbar';
 import Footer from '../components/footer/Footer';
 
