@@ -1,15 +1,21 @@
 // context/DataContext.js
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 
-export const DataContext = createContext();
+const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-  const [userData, setUserData] = useState({});
+  const [state, setState] = useState({
+    theme: 'light',
+    // Diğer global durumlar burada tanımlanabilir
+  });
 
   return (
-    <DataContext.Provider value={{ userData, setUserData }}>
+    <DataContext.Provider value={[state, setState]}>
       {children}
     </DataContext.Provider>
   );
 };
 
+export const useDataContext = () => {
+  return useContext(DataContext);
+};

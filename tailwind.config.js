@@ -4,9 +4,12 @@
       './pages/**/*.{js,jsx,ts,tsx}',
       './components/**/*.{js,jsx,ts,tsx}',
       './styles/**/*.{css}',
+      
     ],
   theme: {
     extend: {},
   },
   plugins: [],
+  mode: 'jit' 
 }
+
