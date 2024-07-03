@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 
 export default function Contact() {
   return (
@@ -54,6 +55,11 @@ export default function Contact() {
               >
                 Send Message
               </button>
+              <Link href="/forgot-password" legacyBehavior>
+                <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                  Forgot Password?
+                </a>
+              </Link>
             </div>
           </form>
           <p className="text-center text-gray-500 text-xs">
@@ -64,5 +70,3 @@ export default function Contact() {
     </div>
   );
 }
-
-  
