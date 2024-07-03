@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -140,9 +141,11 @@ export default function Register() {
               >
                 Register
               </button>
-              <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/login">
-                Already have an account? Login
-              </a>
+              <Link href="/login" legacyBehavior>
+                <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                  Already have an account? Login
+                </a>
+              </Link>
             </div>
           </form>
           <p className="text-center text-gray-500 text-xs">
