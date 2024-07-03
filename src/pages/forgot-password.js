@@ -14,11 +14,19 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row items-center min-h-screen bg-gray-100">
       <Head>
         <title>Forgot Password</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <div className="md:w-1/2 bg-cover bg-center hidden md:block"
+           style={{ backgroundImage: "url('/chef.png')" }}>
+        {/* Büyük ekranlarda (md ve üzeri), arka plan görseli */}
+      </div>
+      <div className="w-full h-64 bg-cover bg-center md:hidden"
+           style={{ backgroundImage: "url('/chef.png')" }}>
+        {/* Küçük ekranlarda (md altı), arka plan görseli */}
+      </div>
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-900">Forgot Password</h2>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
