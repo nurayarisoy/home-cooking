@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import Head from 'next/head';
+import { useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
 
 export default function Login() {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [validations, setValidations] = useState({
     minLength: false,
     hasUpperCase: false,
@@ -27,16 +28,16 @@ export default function Login() {
     setValidations(updatedValidations);
 
     const isValid = Object.values(updatedValidations).every(Boolean);
-    setError(isValid ? '' : 'Password must meet all the requirements.');
+    setError(isValid ? "" : "Password must meet all the requirements.");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (Object.values(validations).every(Boolean)) {
       // Perform login action
-      console.log('Logging in...');
+      console.log("Logging in...");
     } else {
-      setError('Password must meet all the requirements.');
+      setError("Password must meet all the requirements.");
     }
   };
 
@@ -46,18 +47,30 @@ export default function Login() {
         <title>Login</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="hidden md:block md:w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('/chef.png')" }}>
+      <div
+        className="hidden md:block md:w-1/2 bg-cover bg-center"
+        style={{ backgroundImage: "url('/chef.png')" }}
+      >
         {/* You can also use an img tag if preferred */}
         {/* <img src="/path-to-your-image.jpg" alt="Login Image" className="w-full h-full object-cover" /> */}
       </div>
-      <div className="md:hidden w-full h-64 bg-cover bg-center" style={{ backgroundImage: "url('/chef.png')" }}>
+      <div
+        className="md:hidden w-full h-64 bg-cover bg-center"
+        style={{ backgroundImage: "url('/chef.png')" }}
+      >
         {/* Small screen image */}
       </div>
       <div className="flex items-center justify-center w-full md:w-1/2">
         <div className="w-full max-w-md">
-          <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
+          <form
+            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+            onSubmit={handleSubmit}
+          >
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="username"
+              >
                 Username
               </label>
               <input
@@ -68,11 +81,16 @@ export default function Login() {
               />
             </div>
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="password"
+              >
                 Password
               </label>
               <input
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${error ? 'border-red-500' : ''}`}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
+                  error ? "border-red-500" : ""
+                }`}
                 id="password"
                 type="password"
                 placeholder="******************"
@@ -81,20 +99,49 @@ export default function Login() {
               />
               {error && <p className="text-red-500 text-xs italic">{error}</p>}
               <div className="mt-2">
-                <p className={`text-sm ${validations.minLength ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.minLength ? '✓' : '✗'} Minimum 8 characters
+                <p
+                  className={`text-sm ${
+                    validations.minLength ? "text-green-500" : "text-gray-500"
+                  }`}
+                >
+                  {validations.minLength ? "✓" : "✗"} Minimum 8 characters
                 </p>
-                <p className={`text-sm ${validations.hasUpperCase ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.hasUpperCase ? '✓' : '✗'} At least one uppercase letter
+                <p
+                  className={`text-sm ${
+                    validations.hasUpperCase
+                      ? "text-green-500"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {validations.hasUpperCase ? "✓" : "✗"} At least one uppercase
+                  letter
                 </p>
-                <p className={`text-sm ${validations.hasLowerCase ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.hasLowerCase ? '✓' : '✗'} At least one lowercase letter
+                <p
+                  className={`text-sm ${
+                    validations.hasLowerCase
+                      ? "text-green-500"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {validations.hasLowerCase ? "✓" : "✗"} At least one lowercase
+                  letter
                 </p>
-                <p className={`text-sm ${validations.hasNumber ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.hasNumber ? '✓' : '✗'} At least one number
+                <p
+                  className={`text-sm ${
+                    validations.hasNumber ? "text-green-500" : "text-gray-500"
+                  }`}
+                >
+                  {validations.hasNumber ? "✓" : "✗"} At least one number
                 </p>
-                <p className={`text-sm ${validations.hasSpecialChar ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.hasSpecialChar ? '✓' : '✗'} At least one special character
+                <p
+                  className={`text-sm ${
+                    validations.hasSpecialChar
+                      ? "text-green-500"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {validations.hasSpecialChar ? "✓" : "✗"} At least one special
+                  character
                 </p>
               </div>
             </div>
@@ -105,9 +152,12 @@ export default function Login() {
               >
                 Sign In
               </button>
-              <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">
+              <Link
+                href="/forgot-password"
+                className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+              >
                 Forgot Password?
-              </a>
+              </Link>
             </div>
           </form>
           <p className="text-center text-gray-500 text-xs">
