@@ -43,36 +43,34 @@ export default function Register() {
     }));
   };
 
- 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (Object.values(validations).every(Boolean)) {
-    try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
+    if (Object.values(validations).every(Boolean)) {
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, email, password }),
+        });
 
-      if (!response.ok) {
-        throw new Error('Register failed');
+        if (!response.ok) {
+          throw new Error('Register failed');
+        }
+
+        // Başarılı kayıt işlemi
+        console.log('Registration successful!');
+        // Kullanıcıyı başka bir sayfaya yönlendirme, başka bir işlem yapma vs.
+      } catch (error) {
+        setError('Registration failed. Please try again later.');
+        console.error('Registration error:', error);
       }
-
-      // Başarılı kayıt işlemi
-      console.log('Registration successful!');
-      // Kullanıcıyı başka bir sayfaya yönlendirme, başka bir işlem yapma vs.
-    } catch (error) {
-      setError('Registration failed. Please try again later.');
-      console.error('Registration error:', error);
+    } else {
+      setError('Password must meet all the requirements and passwords must match.');
     }
-  } else {
-    setError('Password must meet all the requirements and passwords must match.');
-  }
-};
-
+  };
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
@@ -81,8 +79,6 @@ export default function Register() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="md:w-1/2 h-64 md:h-auto bg-cover bg-center" style={{ backgroundImage: "url('/chef.png')" }}>
-        {/* Alternatif olarak, img etiketi kullanılabilir */}
-        {/* <img src="/path-to-your-image.jpg" alt="Register Image" className="w-full h-full object-cover" /> */}
       </div>
       <div className="flex items-center justify-center w-full md:w-1/2 p-8">
         <div className="w-full max-w-md">

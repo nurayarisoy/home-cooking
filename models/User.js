@@ -1,10 +1,25 @@
-const { connectToDatabase } = require('../lib/db');
+import mongoose from 'mongoose';
 
-async function getUserByEmail(email) {
-  const db = await connectToDatabase(process.env.MONGODB_URI);
-  const users = db.collection('users');
-  const user = await users.findOne({ email });
-  return user;
-}
+const UserSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: [true, 'Please provide a username'],
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: [true, 'Please provide an email'],
+    unique: true,
+    match: [
+      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      'Please provide a valid email',
+    ],
+  },
+  password: {
+    type: String,
+    required: [true, 'Please provide a password'],
+    minlength: 6,
+  },
+});
 
-module.exports = { getUserByEmail };
+export default mongoose.models.User || mongoose.model('User', UserSchema);

@@ -2,25 +2,34 @@ import dbConnect from '../../../lib/db';
 import User from '../../../models/User';
 
 export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    console.log('Method not allowed:', req.method);
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
   await dbConnect();
 
-  if (req.method === 'POST') {
-    const { name, email, password } = req.body;
+  const { username, email, password } = req.body;
 
-    try {
-      const user = new User({
-        name,
-        email,
-        password
-      });
+  try {
+    const existingUser = await User.findOne({ email });
 
-      await user.save();
-
-      res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) {
-      res.status(400).json({ error: 'User registration failed' });
+    if (existingUser) {
+       console.log('User already exists:', email);
+      return res.status(400).json({ error: 'User already exists' });
     }
-  } else {
-    res.status(405).json({ message: 'Method not allowed' });
+
+    const newUser = new User({
+      username,
+      email,
+      password,
+    });
+
+    await newUser.save();
+
+    return res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    console.error('Registration error:', error.message);
+    return res.status(500).json({ error: 'User registration failed' });
   }
 }
