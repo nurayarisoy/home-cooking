@@ -38,9 +38,11 @@ const WhiteNavbar = () => {
               <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex-shrink-0 transform hover:scale-175 tw-shadow-color: transparent">
                   <img
-                    className="h-12 w-auto " // Arka plan transparan yapıldı
+                    className="h-12 w-auto animate-spin  object-cover rounded-full" // Arka plan transparan yapıldı
                     src="/chef1.png" // Logo resmi buraya eklenmeli
                     alt="Logo"
+
+
                   />
                 </div>
                 <div className="ml-4 text-lg font-bold text-white hidden lg:block">
