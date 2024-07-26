@@ -11,24 +11,21 @@ module.exports = {
       scale: {
         '175': '1.75',
       },
-       animation: {
+      animation: {
         'color-change': 'color-change 5s infinite',
-      
-          'wiggle': 'wiggle 1s ease-in-out infinite',
-       
+        'wiggle': 'wiggle 1s ease-in-out infinite',
       },
       keyframes: {
         'color-change': {
           '0%, 100%': { backgroundColor: '#ff0000' },
           '50%': { backgroundColor: '#0000ff' },
-          wiggle: {
-            '0%, 100%': { transform: 'rotate(-3deg)' },
-            '50%': { transform: 'rotate(3deg)' },
-        
+        },
+        'wiggle': {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
         },
       },
     },
   },
   plugins: [],
-}
 }
