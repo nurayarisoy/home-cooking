@@ -7,7 +7,7 @@ const Main = ({ children }) => {
         
         {/* Video bileşeni eklendi */}
         <video
-          src="/video.mp4" // Videonuzun yolu
+          src="/my.mp4" // Videonuzun yolu
           controls
           className="w-full h-screen object-cover"
         />
