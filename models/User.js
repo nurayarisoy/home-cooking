@@ -3,23 +3,28 @@ import mongoose from 'mongoose';
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
-    required: [true, 'Please provide a username'],
-    unique: true,
+    required: true,
   },
   email: {
     type: String,
-    required: [true, 'Please provide an email'],
+    required: true,
     unique: true,
-    match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-      'Please provide a valid email',
-    ],
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
-    minlength: 6,
+    required: true,
+  },
+  location: {
+    latitude: {
+      type: Number,
+      required: false,
+    },
+    longitude: {
+      type: Number,
+      required: false,
+    },
   },
 });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);
+

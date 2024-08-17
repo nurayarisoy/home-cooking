@@ -9,13 +9,13 @@ export default async function handler(req, res) {
 
   await dbConnect();
 
-  const { username, email, password } = req.body;
+  const { username, email, password, latitude, longitude } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-       console.log('User already exists:', email);
+      console.log('User already exists:', email);
       return res.status(400).json({ error: 'User already exists' });
     }
 
@@ -23,6 +23,10 @@ export default async function handler(req, res) {
       username,
       email,
       password,
+      location: {
+        latitude,
+        longitude,
+      },
     });
 
     await newUser.save();
@@ -33,3 +37,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'User registration failed' });
   }
 }
+

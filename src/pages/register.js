@@ -7,6 +7,8 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
   const [error, setError] = useState('');
   const [validations, setValidations] = useState({
     minLength: false,
@@ -43,6 +45,22 @@ export default function Register() {
     }));
   };
 
+  const handleLocationClick = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+        },
+        (error) => {
+          console.error('Location error: ', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -53,16 +71,17 @@ export default function Register() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ username, email, password }),
+          body: JSON.stringify({ username, email, password, latitude, longitude }),
+       
         });
+         const data = await response.json(); // Yanıtın JSON verisini al
+      console.log('Response data:', data); // Yanıt verisini konsola yazdır
 
         if (!response.ok) {
           throw new Error('Register failed');
         }
 
-        // Başarılı kayıt işlemi
         console.log('Registration successful!');
-        // Kullanıcıyı başka bir sayfaya yönlendirme, başka bir işlem yapma vs.
       } catch (error) {
         setError('Registration failed. Please try again later.');
         console.error('Registration error:', error);
@@ -151,6 +170,21 @@ export default function Register() {
                 </p>
               </div>
             </div>
+            <div className="mb-6">
+              <button
+                type="button"
+                onClick={handleLocationClick}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Location Al
+              </button>
+            </div>
+            {latitude && longitude && (
+              <div className="mb-4">
+                <p>Latitude: {latitude}</p>
+                <p>Longitude: {longitude}</p>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

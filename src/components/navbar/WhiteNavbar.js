@@ -5,6 +5,7 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { FaMapMarkerAlt } from 'react-icons/fa';
 
 const navigation = [
   { name: "Home", href: "/", current: false },
@@ -26,7 +27,7 @@ const WhiteNavbar = () => {
           <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-between h-16">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                <DisclosureButton className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white ">
+                <DisclosureButton className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -36,20 +37,18 @@ const WhiteNavbar = () => {
                 </DisclosureButton>
               </div>
               <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex-shrink-0 transform hover:scale-175 tw-shadow-color: transparent">
+                <div className="flex-shrink-0 transform hover:scale-175">
                   <img
-                    className="h-12 w-auto animate-spin  object-cover rounded-full" // Arka plan transparan yapıldı
-                    src="/chef1.png" // Logo resmi buraya eklenmeli
+                    className="h-12 w-auto animate-spin object-cover rounded-full"
+                    src="/chef1.png"
                     alt="Logo"
-
-
                   />
                 </div>
                 <div className="ml-4 text-lg font-bold text-white hidden lg:block">
                   Home Cooking
                 </div>
                 <div className="hidden sm:block sm:ml-6">
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-4 items-center">
                     {navigation.map((item) => (
                       <Link key={item.name} href={item.href} legacyBehavior>
                         <a
@@ -62,6 +61,13 @@ const WhiteNavbar = () => {
                         </a>
                       </Link>
                     ))}
+                    {/* Location Icon */}
+                    <Link href="/locations" passHref legacyBehavior>
+                      <a className="text-white hover:text-gray-300 flex items-center">
+                        <FaMapMarkerAlt className="h-6 w-6" />
+                        <span className="ml-2">Locations</span>
+                      </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -83,6 +89,18 @@ const WhiteNavbar = () => {
                   {item.name}
                 </DisclosureButton>
               ))}
+              {/* Location Icon */}
+              <DisclosureButton
+                as="a"
+                href="/locations"
+                className={classNames(
+                  "bg-red-500 text-white py-4 px-8 rounded hover:bg-red-700",
+                  "block px-3 py-2 rounded-md text-base font-medium flex items-center"
+                )}
+              >
+                <FaMapMarkerAlt className="h-5 w-5" />
+                <span className="ml-2">Locations</span>
+              </DisclosureButton>
             </div>
           </DisclosurePanel>
         </>
