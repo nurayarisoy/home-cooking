@@ -24,6 +24,9 @@ module.exports = {
           '0%, 100%': { transform: 'rotate(-3deg)' },
           '50%': { transform: 'rotate(3deg)' },
         },
+        boxShadow: {
+          'custom': '0 4px 6px rgba(255, 0, 0, 0.5)', // Kırmızı renkte özel gölge
+        }
       },
     },
   },
