@@ -21,7 +21,7 @@ function classNames(...classes) {
 
 const WhiteNavbar = () => {
   return (
-    <Disclosure as="nav" className="bg-gray-500">
+    <Disclosure as="nav" className="bg-black">
       {({ open }) => (
         <>
           <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">

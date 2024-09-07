@@ -13,14 +13,15 @@ const Main = ({ children }) => {
         />
 
         {children}
-        <div className="container bg-white mx-auto px-4">
+        <div className="w-full bg-grid-pattern bg-blue-150 ">
   {/* İlk satır - Başlık, açıklama ve resim */}
   <div className="flex items-center justify-center mb-8">
     {/* Sol tarafta PNG resim */}
-    <div className="w-1/4 mt-4">
-      <img src="/chefbild.png" alt="Home Cooking Image" className="w-full h-auto shadow-lg rounded-full"
-      style={{ boxShadow: "0 4px 6px rgba(0, 0, 255, 0.5)" }} />
+    <div className="w-1/4 mt-4  ">
+      <img src="/chefbild.png" alt="Home Cooking Image" className=" h-auto shadow-lg rounded-full "
+      style={{ boxShadow: "0 4px 6px rgba(0, 0, 255, 0.5) " }} />
     </div>
+    
     <div className="w-2/3 text-right  ">
       <h1 className="text-center font-bold mb-4">Home Cooking</h1>
       <p className="text-gray-700 text-center">
