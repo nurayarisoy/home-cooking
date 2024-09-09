@@ -7,13 +7,26 @@ const Main = ({ children }) => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <main className="relative flex flex-col items-center justify-center flex-grow w-full overflow-hidden">
         {/* Video bileşeni eklendi */}
-        <video
-          src="/my.mp4" // Videonuzun yolu
-          controls
-          className="w-full h-screen object-cover"
-        />
-        
- 
+        <div className="relative w-full h-screen">
+  <video
+    src="/my.mp4" // Videonuzun yolu
+    controls
+    className="w-full h-screen object-cover"
+  />
+  <div className="absolute top-1/2 left-4 transform -translate-y-1/2 flex flex-col space-y-4">
+    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+      <img src="/facebook.png" alt="Facebook" className="w-8 h-8" />
+    </a>
+    <div className="bg-white ">
+  <img src="/x.png" alt="Facebook" className="w-8 h-8"/>
+</div>
+    <div>
+    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+      <img src="/instagram.png" alt="Instagram" className="w-8 h-8" />
+    </a>
+    </div>
+  </div>
+</div>
 
         {children}
 
