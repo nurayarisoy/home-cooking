@@ -71,7 +71,7 @@ const Main = ({ children }) => {
             {/* Yanına resim */}
             <div className="w-1/2 mb-8">
               <img
-                src="/2.png"
+                src="/chef.webp"
                 alt="Additional Image"
                 className="w-full h-auto shadow-lg rounded-full"
                 style={{ boxShadow: "0 4px 6px rgba(0, 0, 255, 0.5)" }}
