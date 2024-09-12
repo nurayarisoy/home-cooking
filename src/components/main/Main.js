@@ -15,14 +15,14 @@ const Main = ({ children }) => {
   />
   <div className="absolute top-1/2 left-4 transform -translate-y-1/2 flex flex-col space-y-4">
     <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-      <img src="/facebook.png" alt="Facebook" className="w-8 h-8" />
+      <img src="/facebook.png" alt="Facebook" className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg" />
     </a>
     <div className="bg-white ">
-  <img src="/x.png" alt="Facebook" className="w-8 h-8"/>
+  <img src="/x.png" alt="Facebook" className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg"/>
 </div>
     <div>
     <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-      <img src="/instagram.png" alt="Instagram" className="w-8 h-8" />
+      <img src="/instagram.png" alt="Instagram" className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg" />
     </a>
     </div>
   </div>
@@ -64,7 +64,7 @@ const Main = ({ children }) => {
               <img
                 src="/Layer 1.jpg"
                 alt="QR Code"
-                className="w-1/3 mx-auto shadow-lg rounded-md"
+                className="w-1/6 mx-auto shadow-lg rounded-md"
               />
             </div>
 
