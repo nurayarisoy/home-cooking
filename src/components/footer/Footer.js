@@ -13,7 +13,7 @@ const Footer = () => {
 
         {/* Orta Bölüm: CONTACT US */}
         <div className="flex-1 flex p-4">
-          <h4 className="text-3xl font-bold mb-4">CONTACT US</h4>
+          <h4 className="text-3xl font-bold mb-4">Contact us</h4>
         </div>
       </div>
 

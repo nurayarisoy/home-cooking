@@ -8,9 +8,10 @@ const Main = ({ children }) => {
       <main className="relative flex flex-col items-center justify-center flex-grow w-full overflow-hidden">
         {/* Video bileşeni eklendi */}
         <div className="relative w-full h-screen">
-  <video
-    src="/my.mp4" // Videonuzun yolu
-    controls
+  <img
+    src="/home-cooking.webp" // Videonuzun yolu
+  
+  
     className="w-full h-screen object-cover"
   />
   <div className="absolute top-1/2 left-4 transform -translate-y-1/2 flex flex-col space-y-4">
@@ -36,7 +37,7 @@ const Main = ({ children }) => {
             {/* Sol tarafta PNG resim */}
             <div className="w-1/4 mt-4  ">
               <img
-                src="/chefbild.png"
+                src="/logo.webp"
                 alt="Home Cooking Image"
                 className=" h-auto shadow-lg rounded-full "
                 style={{ boxShadow: "0 4px 6px rgba(0, 0, 255, 0.5) " }}
