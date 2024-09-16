@@ -9,10 +9,10 @@ const Main = ({ children }) => {
         {/* Video bileşeni eklendi */}
         <div className="relative w-full h-screen">
   <img
-    src="/home-cooking.webp" // Videonuzun yolu
+    src="/chef.webp " // Videonuzun yolu
   
   
-    className="w-full h-screen object-cover"
+    className="w-full h-screen object-cover "
   />
   <div className="absolute top-1/2 left-4 transform -translate-y-1/2 flex flex-col space-y-4">
     <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
@@ -72,7 +72,7 @@ const Main = ({ children }) => {
             {/* Yanına resim */}
             <div className="w-1/2 mb-8">
               <img
-                src="/chef.webp"
+                src="/logo2.webp"
                 alt="Additional Image"
                 className="w-full h-auto shadow-lg rounded-full"
                 style={{ boxShadow: "0 4px 6px rgba(0, 0, 255, 0.5)" }}
