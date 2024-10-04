@@ -42,7 +42,7 @@ async function registerUser(db, user) {
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { username, email, password, latitude, longitude } = req.body;
-
+    console.log('Veritabanı bağlantı hatası:', err.message);
     try {
       const db = await openDatabase();
       await createUsersTable(db); // Kullanıcılar tablosunu oluştur

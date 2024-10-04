@@ -1,12 +1,11 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
-const bodyParser = require('body-parser');
-
+const cors = require('cors');
 const app = express();
-const port = 3000;
 
 // Middleware
-app.use(bodyParser.json());
+app.use(cors());
+app.use(express.json()); // body-parser yerine bu kullanılabilir
 
 // SQLite veritabanını oluştur veya bağlan
 const db = new sqlite3.Database('./database.db', (err) => {
@@ -35,70 +34,6 @@ db.serialize(() => {
 });
 
 // Kullanıcı kaydetme API'si
-// Kullanıcı bilgilerini alma API'si
-// Kullanıcı güncelleme API'si
-// Kullanıcı silme API'si
-// Giriş API'si
-app.post('/login', (req, res) => {
-    const { email, password } = req.body;
-  
-    db.get(`SELECT * FROM users WHERE email = ? AND password = ?`, [email, password], (err, row) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (!row) {
-        return res.status(401).json({ error: "Geçersiz e-posta veya şifre." });
-      }
-      res.status(200).json({ message: "Giriş başarılı!", user: row });
-    });
-  });
-  
-app.delete('/users/:id', (req, res) => {
-    const { id } = req.params;
-  
-    db.run(`DELETE FROM users WHERE id = ?`, [id], function(err) {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (this.changes === 0) {
-        return res.status(404).json({ error: "Kullanıcı bulunamadı." });
-      }
-      res.status(200).json({ message: "Kullanıcı başarıyla silindi." });
-    });
-  });
-  
-
-app.put('/users/:id', (req, res) => {
-    const { id } = req.params;
-    const { username, email, password, location } = req.body;
-  
-    db.run(`UPDATE users SET username = ?, email = ?, password = ?, location = ? WHERE id = ?`, 
-      [username, email, password, location, id], 
-      function(err) {
-        if (err) {
-          return res.status(500).json({ error: err.message });
-        }
-        if (this.changes === 0) {
-          return res.status(404).json({ error: "Kullanıcı bulunamadı." });
-        }
-        res.status(200).json({ message: "Kullanıcı başarıyla güncellendi." });
-    });
-  });
-  
-app.get('/users/:id', (req, res) => {
-    const userId = req.params.id;
-  
-    db.get(`SELECT * FROM users WHERE id = ?`, [userId], (err, row) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (!row) {
-        return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
-      }
-      res.json(row);
-    });
-  });
-  
 app.post('/register', (req, res) => {
   const { username, email, password, location } = req.body;
 
@@ -112,12 +47,76 @@ app.post('/register', (req, res) => {
   });
 });
 
+// Giriş API'si
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+  db.get(`SELECT * FROM users WHERE email = ? AND password = ?`, [email, password], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(401).json({ error: "Geçersiz e-posta veya şifre." });
+    }
+    res.status(200).json({ message: "Giriş başarılı!", user: row });
+  });
+});
+
+// Kullanıcı silme API'si
+app.delete('/users/:id', (req, res) => {
+  const { id } = req.params;
+
+  db.run(`DELETE FROM users WHERE id = ?`, [id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ error: "Kullanıcı bulunamadı." });
+    }
+    res.status(200).json({ message: "Kullanıcı başarıyla silindi." });
+  });
+});
+
+// Kullanıcı güncelleme API'si
+app.put('/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { username, email, password, location } = req.body;
+
+  db.run(`UPDATE users SET username = ?, email = ?, password = ?, location = ? WHERE id = ?`, 
+    [username, email, password, location, id], 
+    function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ error: "Kullanıcı bulunamadı." });
+      }
+      res.status(200).json({ message: "Kullanıcı başarıyla güncellendi." });
+  });
+});
+
+// Kullanıcı bilgilerini alma API'si
+app.get('/users/:id', (req, res) => {
+  const userId = req.params.id;
+
+  db.get(`SELECT * FROM users WHERE id = ?`, [userId], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
+    }
+    res.json(row);
+  });
+});
+
 // Kök dizin için bir route ekleyin
 app.get('/', (req, res) => {
   res.send('Hoş Geldiniz! Sunucu çalışıyor.');
 });
 
 // Sunucuyu başlat
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+const PORT = 5000; // Port numarasını burada belirtiyoruz
+app.listen(PORT, () => {
+  console.log(`Sunucu ${PORT} portunda çalışıyor.`);
 });
