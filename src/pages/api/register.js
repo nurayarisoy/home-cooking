@@ -1,22 +1,20 @@
 // pages/api/register.js
-import { Configuration, OpenAIApi } from "openai";
+import { Configuration, OpenAIApi } from "openai"; // OpenAI API import'u
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
 const configuration = new Configuration({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // API anahtarını al
 });
 const openai = new OpenAIApi(configuration);
 
-// SQLite veritabanını açan fonksiyon
 async function openDatabase() {
   return open({
-    filename: './database/database.db', // Veritabanı dosyasının yolu
+    filename: './database/database.db',
     driver: sqlite3.Database,
   });
 }
 
-// Kullanıcılar tablosunu oluşturma
 async function createUsersTable(db) {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -30,7 +28,6 @@ async function createUsersTable(db) {
   `);
 }
 
-// Kayıt fonksiyonu
 async function registerUser(db, user) {
   const { username, email, password, latitude, longitude } = user;
   await db.run(`
@@ -42,13 +39,13 @@ async function registerUser(db, user) {
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { username, email, password, latitude, longitude } = req.body;
-    console.log('Veritabanı bağlantı hatası:', err.message);
+   
+
     try {
       const db = await openDatabase();
-      await createUsersTable(db); // Kullanıcılar tablosunu oluştur
+      await createUsersTable(db);
       await registerUser(db, { username, email, password, latitude, longitude });
 
-      // OpenAI API'ye istek gönder
       const response = await openai.createCompletion({
         model: "text-davinci-003",
         prompt: `Kullanıcı kaydı: ${username}, Email: ${email}, Lokasyon: (${latitude}, ${longitude})`,
@@ -56,8 +53,6 @@ export default async function handler(req, res) {
       });
 
       const completion = response.data.choices[0].text;
-
-      // Yanıt olarak OpenAI'nin yanıtını döndür
       res.status(200).json({ message: "Kayıt başarılı", completion });
     } catch (error) {
       console.error("Veritabanı hatası:", error);
