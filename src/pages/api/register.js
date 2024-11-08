@@ -1,16 +1,16 @@
 // pages/api/register.js
-import { Configuration, OpenAIApi } from "openai"; // OpenAI API import'u
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
 
-const configuration = new Configuration({
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
+
+// Eğer bu hatayı alıyorsanız, OpenAI API ayarlarını doğrudan OpenAIApi'ye geçirin
+const openai = new OpenAIApi({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // API anahtarını al
 });
-const openai = new OpenAIApi(configuration);
 
 async function openDatabase() {
   return open({
-    filename: './database/database.db',
+    filename: "./database/database.db",
     driver: sqlite3.Database,
   });
 }
@@ -36,30 +36,32 @@ async function registerUser(db, user) {
   `, [username, email, password, latitude, longitude]);
 }
 
+// pages/api/register.js
 export default async function handler(req, res) {
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     const { username, email, password, latitude, longitude } = req.body;
-   
 
     try {
+      // OpenAI API çağrısı örneği
+      const response = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: "Hello World",
+        max_tokens: 5,
+      });
+
+      // Veritabanı işlemleri
       const db = await openDatabase();
       await createUsersTable(db);
       await registerUser(db, { username, email, password, latitude, longitude });
+      await db.close();
 
-      const response = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: `Kullanıcı kaydı: ${username}, Email: ${email}, Lokasyon: (${latitude}, ${longitude})`,
-        max_tokens: 100,
-      });
-
-      const completion = response.data.choices[0].text;
-      res.status(200).json({ message: "Kayıt başarılı", completion });
+      res.status(200).json({ message: "User registered successfully", data: response.data });
     } catch (error) {
-      console.error("Veritabanı hatası:", error);
-      res.status(500).json({ error: "Kayıt işlemi sırasında bir hata oluştu." });
+      console.error("OpenAI API Error:", error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
   } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.setHeader("Allow", ["POST"]);
+    res.status(405).json({ message: `Method ${req.method} Not Allowed` });
   }
 }
