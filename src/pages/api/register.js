@@ -5,7 +5,7 @@ import { open } from "sqlite";
 
 // Eğer bu hatayı alıyorsanız, OpenAI API ayarlarını doğrudan OpenAIApi'ye geçirin
 const openai = new OpenAIApi({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // API anahtarını al
+  apiKey: process.env.
 });
 
 async function openDatabase() {
