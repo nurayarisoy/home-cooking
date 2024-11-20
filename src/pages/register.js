@@ -9,8 +9,9 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  
   const [error, setError] = useState("");
-   const [showPassword, setShowPassword] = useState(false)
+  
   const [validations, setValidations] = useState({
     minLength: false,
     hasUpperCase: false,
@@ -19,7 +20,7 @@ export default function Register() {
     hasSpecialChar: false,
     passwordsMatch: false,
   });
-
+  const [showPassword, setShowPassword] = useState(false)
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
@@ -167,13 +168,12 @@ export default function Register() {
                 value={password}
                 onChange={handlePasswordChange}
               />
-              const [showPassword, setShowPassword] = useState(false);
-              <input
-                type={showPassword ? "text" : "password"}
-                // other props
-              />
-              <button onClick={() => setShowPassword(!showPassword)}>
-                Show
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-sm text-blue-500 mt-2"
+              >
+                {showPassword ? "Hide" : "Show"} Password
               </button>
               <input
                 className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
