@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
+import { useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
 
 export default function Register() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [error, setError] = useState("");
+   const [showPassword, setShowPassword] = useState(false)
   const [validations, setValidations] = useState({
     minLength: false,
     hasUpperCase: false,
@@ -53,11 +54,12 @@ export default function Register() {
           setLongitude(position.coords.longitude);
         },
         (error) => {
-          console.error('Location error: ', error);
+          setError("Konum alınamadı. Lütfen tarayıcı ayarlarını kontrol edin.");
+          console.error("Location error: ", error);
         }
       );
     } else {
-      console.error('Geolocation is not supported by this browser.');
+      console.error("Geolocation is not supported by this browser.");
     }
   };
 
@@ -66,28 +68,37 @@ export default function Register() {
 
     if (Object.values(validations).every(Boolean)) {
       try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
+        const response = await fetch("/api/register", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ username, email, password, latitude, longitude }),
-       
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            latitude,
+            longitude,
+          }),
         });
-         const data = await response.json(); // Yanıtın JSON verisini al
-      console.log('Response data:', data); // Yanıt verisini konsola yazdır
-
+        const data = await response.json();
         if (!response.ok) {
-          throw new Error('Register failed');
+          setError(data.message || "Registration failed. Please try again.");
         }
 
-        console.log('Registration successful!');
+        if (response.ok) {
+          router.push("/login");
+        }
+
+        console.log("Registration successful!");
       } catch (error) {
-        setError('Registration failed. Please try again later.');
-        console.error('Registration error:', error);
+        setError("Registration failed. Please try again later.");
+        console.error("Registration error:", error);
       }
     } else {
-      setError('Password must meet all the requirements and passwords must match.');
+      setError(
+        "Password must meet all the requirements and passwords must match."
+      );
     }
   };
 
@@ -97,13 +108,21 @@ export default function Register() {
         <title>Register</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="md:w-1/2 h-64 md:h-auto bg-cover bg-center" style={{ backgroundImage: "url('/chef.png')" }}>
-      </div>
+      <div
+        className="md:w-1/2 h-64 md:h-auto bg-cover bg-center"
+        style={{ backgroundImage: "url('/chef.png')" }}
+      ></div>
       <div className="flex items-center justify-center w-full md:w-1/2 p-8">
         <div className="w-full max-w-md">
-          <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
+          <form
+            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+            onSubmit={handleSubmit}
+          >
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="username"
+              >
                 Username
               </label>
               <input
@@ -116,7 +135,10 @@ export default function Register() {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="email"
+              >
                 Email
               </label>
               <input
@@ -129,19 +151,34 @@ export default function Register() {
               />
             </div>
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="password"
+              >
                 Password
               </label>
               <input
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${error ? 'border-red-500' : ''}`}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
+                  error ? "border-red-500" : ""
+                }`}
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="******************"
                 value={password}
                 onChange={handlePasswordChange}
               />
+              const [showPassword, setShowPassword] = useState(false);
               <input
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${error ? 'border-red-500' : ''}`}
+                type={showPassword ? "text" : "password"}
+                // other props
+              />
+              <button onClick={() => setShowPassword(!showPassword)}>
+                Show
+              </button>
+              <input
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
+                  error ? "border-red-500" : ""
+                }`}
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm Password"
@@ -150,23 +187,60 @@ export default function Register() {
               />
               {error && <p className="text-red-500 text-xs italic">{error}</p>}
               <div className="mt-2">
-                <p className={`text-sm ${validations.minLength ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.minLength ? '✓' : '✗'} Minimum 8 characters
+                <p
+                  className={`text-sm ${
+                    validations.minLength ? "text-green-500" : "text-gray-500"
+                  }`}
+                >
+                  {validations.minLength && (
+                    <p className="text-green-500">Minimum 8 characters met!</p>
+                  )}
                 </p>
-                <p className={`text-sm ${validations.hasUpperCase ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.hasUpperCase ? '✓' : '✗'} At least one uppercase letter
+                <p
+                  className={`text-sm ${
+                    validations.hasUpperCase
+                      ? "text-green-500"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {validations.hasUpperCase ? "✓" : "✗"} At least one uppercase
+                  letter
                 </p>
-                <p className={`text-sm ${validations.hasLowerCase ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.hasLowerCase ? '✓' : '✗'} At least one lowercase letter
+                <p
+                  className={`text-sm ${
+                    validations.hasLowerCase
+                      ? "text-green-500"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {validations.hasLowerCase ? "✓" : "✗"} At least one lowercase
+                  letter
                 </p>
-                <p className={`text-sm ${validations.hasNumber ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.hasNumber ? '✓' : '✗'} At least one number
+                <p
+                  className={`text-sm ${
+                    validations.hasNumber ? "text-green-500" : "text-gray-500"
+                  }`}
+                >
+                  {validations.hasNumber ? "✓" : "✗"} At least one number
                 </p>
-                <p className={`text-sm ${validations.hasSpecialChar ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.hasSpecialChar ? '✓' : '✗'} At least one special character
+                <p
+                  className={`text-sm ${
+                    validations.hasSpecialChar
+                      ? "text-green-500"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {validations.hasSpecialChar ? "✓" : "✗"} At least one special
+                  character
                 </p>
-                <p className={`text-sm ${validations.passwordsMatch ? 'text-green-500' : 'text-gray-500'}`}>
-                  {validations.passwordsMatch ? '✓' : '✗'} Passwords match
+                <p
+                  className={`text-sm ${
+                    validations.passwordsMatch
+                      ? "text-green-500"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {validations.passwordsMatch ? "✓" : "✗"} Passwords match
                 </p>
               </div>
             </div>
