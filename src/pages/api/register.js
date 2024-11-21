@@ -1,63 +1,50 @@
-// pages/api/register.js
+import { database, ref, set } from '../../../firebaseConfig'; // Firebase yapılandırmasını dahil et
+import axios from 'axios';
 
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+// Maps API ile adresi alma
+const getAddressFromCoordinates = async (latitude, longitude) => {
+  const apiKey = "YOUR_GOOGLE_MAPS_API_KEY"; // Google Maps API anahtarınızı buraya ekleyin
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
 
-// Eğer bu hatayı alıyorsanız, OpenAI API ayarlarını doğrudan OpenAIApi'ye geçirin
-const openai = new OpenAIApi({
-  apiKey: process.env.
-});
+  try {
+    const response = await axios.get(url);
+    return response.data.results[0]?.formatted_address || "Address not found";
+  } catch (error) {
+    console.error("Error fetching address:", error);
+    return "Error fetching address";
+  }
+};
 
-async function openDatabase() {
-  return open({
-    filename: "./database/database.db",
-    driver: sqlite3.Database,
+// Kullanıcıyı Firebase veritabanına kaydetme
+async function registerUser(user) {
+  const { username, email, password, latitude, longitude } = user;
+  
+  // Harita API'si ile adresi al
+  const address = await getAddressFromCoordinates(latitude, longitude);
+
+  // Firebase'e kullanıcıyı kaydet
+  await set(ref(database, 'users/' + email.replace('.', ',')), {
+    username,
+    email,
+    password,
+    latitude,
+    longitude,
+    address,
   });
 }
 
-async function createUsersTable(db) {
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL,
-      latitude REAL,
-      longitude REAL
-    )
-  `);
-}
-
-async function registerUser(db, user) {
-  const { username, email, password, latitude, longitude } = user;
-  await db.run(`
-    INSERT INTO users (username, email, password, latitude, longitude)
-    VALUES (?, ?, ?, ?, ?)
-  `, [username, email, password, latitude, longitude]);
-}
-
-// pages/api/register.js
+// API handler
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { username, email, password, latitude, longitude } = req.body;
 
     try {
-      // OpenAI API çağrısı örneği
-      const response = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: "Hello World",
-        max_tokens: 5,
-      });
+      // Firebase işlemleri
+      await registerUser({ username, email, password, latitude, longitude });
 
-      // Veritabanı işlemleri
-      const db = await openDatabase();
-      await createUsersTable(db);
-      await registerUser(db, { username, email, password, latitude, longitude });
-      await db.close();
-
-      res.status(200).json({ message: "User registered successfully", data: response.data });
+      res.status(200).json({ message: "User registered successfully" });
     } catch (error) {
-      console.error("OpenAI API Error:", error);
+      console.error("Firebase Error:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   } else {

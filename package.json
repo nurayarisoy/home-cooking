@@ -11,7 +11,10 @@
   "dependencies": {
     "@headlessui/react": "^2.1.1",
     "@heroicons/react": "^2.1.4",
+    "@react-google-maps/api": "^2.20.3",
+    "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
+    "firebase": "^11.0.2",
     "leaflet": "^1.9.4",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.1",
