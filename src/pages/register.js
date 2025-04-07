@@ -10,17 +10,19 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     try {
-      const response = await axios.post('/api/register', {
-        username,
-        email,
-        password,
-        latitude,
-        longitude,
+      const response = await axios.post("http://localhost:3001/api/register", {
+        username: "testuser",
+        email: "test@example.com",
+        password: "123456",
+        latitude: 40.7128,
+        longitude: -74.0060,
       });
       alert(response.data.message);
     } catch (error) {
       console.error("Error registering user:", error);
+      alert("Kayıt sırasında bir hata oluştu.");
     }
   };
 

@@ -61,13 +61,19 @@ const Main = ({ children }) => {
           {/* İkinci satır - QR kodu ve resim */}
           <div className="flex items-center justify-center">
             {/* QR kodu */}
+            <a href="https://gravatar.com/nuraysuat" target="_blank" rel="noopener noreferrer">
             <div className="w-1/2 text-center">
               <img
                 src="/Layer 1.jpg"
                 alt="QR Code"
                 className="w-1/6 mx-auto shadow-lg rounded-md"
               />
+                
+             
+
             </div>
+            </a>
+           
 
             {/* Yanına resim */}
             <div className="w-1/2 mb-8">
