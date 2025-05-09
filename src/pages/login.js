@@ -43,6 +43,14 @@ export default function Login() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+      <a href="/" className="block">
+  <img
+    className="h-16 w-auto animate-spin object-cover rounded-full transform hover:scale-175 transition-transform duration-300 
+               ml-4 mt-4" // Sağa ve aşağıya kaydırma
+    src="/chef1.png"
+    alt="Logo"
+  />
+</a>
       <Head>
         <title>Login</title>
         <link rel="icon" href="/favicon.ico" />
