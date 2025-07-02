@@ -50,21 +50,21 @@ export default function Recibe() {
 
   return (
     <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">🍳 AI Yemek Tarifi Önerisi</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">🍳 AI Recibe Suggestion</h1>
 
       <div className="flex space-x-2 mb-4">
         <input
           type="text"
           value={ingredient}
           onChange={(e) => setIngredient(e.target.value)}
-          placeholder="Malzeme ekleyin..."
+          placeholder="Add material..."
           className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           onClick={addIngredient}
-          className="bg-blue-500 hover:bg-blue-600 transition-colors text-white font-semibold px-4 py-2 rounded-lg"
+          className="bg-red-500 hover:bg-red-600 transition-colors text-white font-semibold px-4 py-2 rounded-lg"
         >
-          Ekle
+          Add
         </button>
       </div>
 
@@ -86,26 +86,47 @@ export default function Recibe() {
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-gray-400 mb-4">Henüz malzeme eklemediniz.</p>
+        <p className="text-sm text-gray-400 mb-4">You haven't added any materials yet.</p>
       )}
 
       <button
         onClick={getRecipe}
-        className="w-full bg-green-500 hover:bg-green-600 transition-colors text-white font-semibold py-2 rounded-lg mb-4"
+        className="w-full bg-red-500 hover:bg-red-600 transition-colors text-white font-semibold py-2 rounded-lg mb-4"
       >
-        Öneri Al
+        Take suggestion
       </button>
 
       {loading && (
-        <p className="text-center text-gray-500">Yükleniyor...</p>
+        <p className="text-center text-gray-500">loading...</p>
       )}
 
       {suggestion && (
-        <div className="bg-yellow-50 border border-yellow-400 text-yellow-800 p-4 rounded-lg mt-4">
-          <h2 className="font-bold mb-2">AI Önerisi:</h2>
+        <div className="bg-red-50 border border-red-400 text-red-800 p-4 rounded-lg mt-4">
+          <h2 className="font-bold mb-2">AI Suggestion:</h2>
           <p>{suggestion}</p>
         </div>
+        
       )}
+<a href="/" className="absolute top-4 left-4 z-10">
+        <img
+          className="h-16 w-16 animate-spin object-cover rounded-full transform hover:scale-110 transition-transform duration-300"
+          src="/chef1.png"
+          alt="Logo"
+        />
+      </a>
+
+      {/* Left Image (only for medium+ screens) */}
+      <div
+        className="hidden md:block md:w-1/2 bg-cover bg-center"
+        style={{ backgroundImage: "url('/chef.png')" }}
+      ></div>
+
+      {/* Image for small screens */}
+      <div
+        className="md:hidden w-full h-64 bg-cover bg-center"
+        style={{ backgroundImage: "url('/chef.png')" }}
+      ></div>
     </div>
+    
   );
 }
