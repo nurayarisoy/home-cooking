@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Head from "next/head";
+import { useRouter } from 'next/router';
 
 const RegisterForm = () => {
   const [username, setUsername] = useState('');
@@ -8,12 +9,23 @@ const RegisterForm = () => {
   const [password, setPassword] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+  const router = useRouter();
+
+  // Otomatik konum alma
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        setLatitude(pos.coords.latitude);
+        setLongitude(pos.coords.longitude);
+      });
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:3001/api/register", {
+      const response = await axios.post("/backend-developer/api/register.js", {
         username,
         email,
         password,
@@ -21,9 +33,11 @@ const RegisterForm = () => {
         longitude,
       });
       alert(response.data.message);
+      router.push("/welcome"); // 👈 Kayıt başarılıysa yönlendir
     } catch (error) {
+      const errorMsg = error?.response?.data?.message || "Kayıt sırasında bir hata oluştu.";
+      alert(errorMsg);
       console.error("Error registering user:", error);
-      alert("Kayıt sırasında bir hata oluştu.");
     }
   };
 
@@ -34,7 +48,6 @@ const RegisterForm = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {/* Logo */}
       <a href="/" className="absolute top-4 left-4 z-10">
         <img
           className="h-16 w-16 animate-spin object-cover rounded-full transform hover:scale-110 transition-transform duration-300"
@@ -43,19 +56,16 @@ const RegisterForm = () => {
         />
       </a>
 
-      {/* Left Image (only for medium+ screens) */}
       <div
         className="hidden md:block md:w-1/2 bg-cover bg-center"
         style={{ backgroundImage: "url('/chef.png')" }}
       ></div>
 
-      {/* Image for small screens */}
       <div
         className="md:hidden w-full h-64 bg-cover bg-center"
         style={{ backgroundImage: "url('/chef.png')" }}
       ></div>
 
-      {/* Form */}
       <div className="flex flex-col justify-center items-center md:w-1/2 w-full p-8">
         <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
           <input
@@ -63,6 +73,7 @@ const RegisterForm = () => {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            required
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
@@ -70,6 +81,7 @@ const RegisterForm = () => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
@@ -77,6 +89,7 @@ const RegisterForm = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <div className="grid grid-cols-2 gap-4">
@@ -85,6 +98,7 @@ const RegisterForm = () => {
               placeholder="Latitude"
               value={latitude}
               onChange={(e) => setLatitude(e.target.value)}
+              required
               className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
@@ -92,6 +106,7 @@ const RegisterForm = () => {
               placeholder="Longitude"
               value={longitude}
               onChange={(e) => setLongitude(e.target.value)}
+              required
               className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
