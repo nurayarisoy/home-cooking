@@ -61,7 +61,7 @@ export default function Recibe() {
 
   return (
     <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">🍳 AI Recipe Suggestion</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">🍳  Recipe Suggestion</h1>
 
       <div className="flex space-x-2 mb-4">
         <input
@@ -113,7 +113,7 @@ export default function Recibe() {
 
       {suggestion && !recipe && (
         <div className="bg-red-50 border border-red-400 text-red-800 p-4 rounded-lg mt-4">
-          <h2 className="font-bold mb-2">AI Suggestion:</h2>
+          <h2 className="font-bold mb-2"> Suggestion:</h2>
           <p>{suggestion}</p>
         </div>
       )}

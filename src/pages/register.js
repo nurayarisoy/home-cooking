@@ -1,41 +1,35 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
 import Head from "next/head";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
+import api from "../utils/axios"; // 👈 Express backend için axios instance
 
 const RegisterForm = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
-  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter(); // 👈 bunu ekle
 
-  // Otomatik konum alma
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setLatitude(pos.coords.latitude);
-        setLongitude(pos.coords.longitude);
-      });
-    }
-  }, []);
+
+  // Konum alma
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+  console.log("Gönderilen data:", { username, email, password });
     try {
-      const response = await axios.post("/backend-developer/api/register.js", {
+      const response = await api.post("/api/register", {
         username,
         email,
         password,
-        latitude,
-        longitude,
+        
       });
+
       alert(response.data.message);
-      router.push("/welcome"); // 👈 Kayıt başarılıysa yönlendir
+      router.push("/welcome"); // ✅ başarılı kayıt sonrası yönlendir
     } catch (error) {
-      const errorMsg = error?.response?.data?.message || "Kayıt sırasında bir hata oluştu.";
+      const errorMsg =
+        error?.response?.data?.message || "Kayıt sırasında bir hata oluştu.";
       alert(errorMsg);
       console.error("Error registering user:", error);
     }
@@ -93,22 +87,7 @@ const RegisterForm = () => {
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <div className="grid grid-cols-2 gap-4">
-            <input
-              type="number"
-              placeholder="Latitude"
-              value={latitude}
-              onChange={(e) => setLatitude(e.target.value)}
-              required
-              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="number"
-              placeholder="Longitude"
-              value={longitude}
-              onChange={(e) => setLongitude(e.target.value)}
-              required
-              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+           
           </div>
           <button
             type="submit"
