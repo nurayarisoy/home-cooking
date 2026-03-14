@@ -2,6 +2,9 @@
   "name": "home-cooking",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,7 +21,7 @@
     "leaflet": "^1.9.4",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.1",
-    "next": "^15.3.4",
+    "next": "^15.5.12",
     "postcss-preset-env": "^9.4.0",
     "react": "^18",
     "react-dom": "^18",
@@ -30,7 +33,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.19",
     "eslint": "^8",
-    "eslint-config-next": "14.1.0",
+    "eslint-config-next": "^15.5.12",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.4"
   }
