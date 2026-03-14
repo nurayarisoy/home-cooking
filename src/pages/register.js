@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import api from "../utils/axios"; // 👈 Express backend için axios instance
 
@@ -42,13 +43,13 @@ const RegisterForm = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <a href="/" className="absolute top-4 left-4 z-10">
+      <Link href="/" className="absolute top-4 left-4 z-10">
         <img
           className="h-16 w-16 animate-spin object-cover rounded-full transform hover:scale-110 transition-transform duration-300"
           src="/chef1.png"
           alt="Logo"
         />
-      </a>
+      </Link>
 
       <div
         className="hidden md:block md:w-1/2 bg-cover bg-center"

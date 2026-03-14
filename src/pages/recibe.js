@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Link from 'next/link';
 import { XCircleIcon } from '@heroicons/react/24/solid';
 
 export default function Recibe() {
@@ -99,7 +100,7 @@ export default function Recibe() {
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-gray-400 mb-4">You haven't added any ingredients yet.</p>
+        <p className="text-sm text-gray-400 mb-4">You haven&apos;t added any ingredients yet.</p>
       )}
 
       <button
@@ -145,13 +146,13 @@ export default function Recibe() {
         </div>
       )}
 
-      <a href="/" className="absolute top-4 left-4 z-10">
+      <Link href="/" className="absolute top-4 left-4 z-10">
         <img
           className="h-16 w-16 animate-spin object-cover rounded-full transform hover:scale-110 transition-transform duration-300"
           src="/chef1.png"
           alt="Logo"
         />
-      </a>
+      </Link>
 
       {/* Left Image (only for medium+ screens) */}
       <div

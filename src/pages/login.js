@@ -60,13 +60,13 @@ export default function Login() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      <a href="/" className="block">
+      <Link href="/" className="block">
         <img
           className="h-16 w-auto animate-spin object-cover rounded-full transform hover:scale-175 transition-transform duration-300 ml-4 mt-4"
           src="/chef1.png"
           alt="Logo"
         />
-      </a>
+      </Link>
 
       <Head>
         <title>Login</title>
