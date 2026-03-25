@@ -1,4 +1,5 @@
 import { getDb } from "../../lib/db";
+import { getMongoDb, isMongoConfigured } from "../../lib/mongo";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -6,14 +7,37 @@ export default async function handler(req, res) {
   }
 
   try {
-    const db = await getDb();
-    const rows = await db.all(
-      `
-        SELECT id, username, location_lat, location_lng
-        FROM users
-        WHERE location_lat IS NOT NULL AND location_lng IS NOT NULL
-      `
-    );
+    let rows;
+    if (isMongoConfigured()) {
+      const db = await getMongoDb();
+      rows = await db
+        .collection("users")
+        .find(
+          {
+            location_lat: { $ne: null },
+            location_lng: { $ne: null },
+          },
+          {
+            projection: {
+              _id: 0,
+              id: 1,
+              username: 1,
+              location_lat: 1,
+              location_lng: 1,
+            },
+          }
+        )
+        .toArray();
+    } else {
+      const db = await getDb();
+      rows = await db.all(
+        `
+          SELECT id, username, location_lat, location_lng
+          FROM users
+          WHERE location_lat IS NOT NULL AND location_lng IS NOT NULL
+        `
+      );
+    }
 
     const users = rows.map((row) => ({
       _id: row.id,

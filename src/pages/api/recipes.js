@@ -1,4 +1,8 @@
 import { getDb } from "../../lib/db";
+import { getMongoDb, isMongoConfigured, nextSequence } from "../../lib/mongo";
+import { getSessionUserFromRequest } from "../../lib/session";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 const PUBLISH_QUOTA = 10;
 
@@ -32,8 +36,231 @@ function toMediaName(mediaUrl) {
   }
 }
 
+function toUploadsFilePath(mediaUrl) {
+  const raw = String(mediaUrl || "").trim();
+  if (!raw || raw.startsWith("data:")) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(raw, "https://home-cooking.local");
+    const pathname = parsed.pathname || "";
+    if (!pathname.startsWith("/uploads/")) {
+      return null;
+    }
+
+    const fileName = path.basename(decodeURIComponent(pathname));
+    if (!fileName || fileName === "." || fileName === "..") {
+      return null;
+    }
+
+    return path.join(process.cwd(), "public", "uploads", fileName);
+  } catch {
+    return null;
+  }
+}
+
+async function removeLocalUploadFile(mediaUrl) {
+  const filePath = toUploadsFilePath(mediaUrl);
+  if (!filePath) {
+    return;
+  }
+
+  try {
+    await fs.unlink(filePath);
+  } catch (error) {
+    if (error?.code !== "ENOENT") {
+      console.error("Media cleanup error:", error);
+    }
+  }
+}
+
 export default async function handler(req, res) {
   try {
+    const sessionUser = getSessionUserFromRequest(req);
+    if (req.method !== "GET" && !sessionUser) {
+      return res.status(401).json({ message: "Not authenticated." });
+    }
+
+    if (isMongoConfigured()) {
+      const mongoDb = await getMongoDb();
+      const recipesCollection = mongoDb.collection("recipes");
+
+      if (req.method === "GET") {
+        const recipes = await recipesCollection
+          .find({}, { projection: { _id: 0 } })
+          .sort({ id: -1 })
+          .toArray();
+        return res.status(200).json(recipes);
+      }
+
+      if (req.method === "POST") {
+        const title = normalizeText(req.body?.title);
+        const ingredientsText = normalizeText(req.body?.ingredientsText);
+        const instructionsText = normalizeText(req.body?.instructionsText);
+        const legacyDescription = normalizeText(req.body?.description);
+        const description = instructionsText || legacyDescription;
+        const mediaUrl = normalizeText(req.body?.mediaUrl) || null;
+        const mediaType = normalizeText(req.body?.mediaType) || null;
+        const mediaName = req.body?.mediaName
+          ? String(req.body.mediaName)
+          : toMediaName(mediaUrl);
+        const authorEmail = sessionUser?.email || null;
+        const published = normalizePublished(req.body?.published);
+
+        if (!title || !description) {
+          return res.status(400).json({
+            message: "Title and instructions are required.",
+          });
+        }
+
+        if (published === 1 && authorEmail) {
+          const count = await recipesCollection.countDocuments({
+            author_email: authorEmail,
+            published: 1,
+          });
+          if (count >= PUBLISH_QUOTA) {
+            return res.status(429).json({
+              message: `Yayinlama kotaniza ulastiniz (${PUBLISH_QUOTA} tarif). Birini taslaga alip tekrar deneyin.`,
+            });
+          }
+        }
+
+        const id = await nextSequence("recipes");
+        await recipesCollection.insertOne({
+          id,
+          title,
+          description,
+          ingredients_text: ingredientsText || null,
+          instructions_text: instructionsText || null,
+          media_name: mediaName,
+          media_url: mediaUrl,
+          media_type: mediaType,
+          published,
+          author_email: authorEmail,
+          created_at: new Date().toISOString(),
+        });
+
+        return res.status(201).json({
+          message: "Recipe created successfully.",
+          id,
+        });
+      }
+
+      if (req.method === "PUT") {
+        const id = Number(req.body?.id);
+        if (!Number.isInteger(id) || id <= 0) {
+          return res.status(400).json({ message: "Valid recipe id is required." });
+        }
+
+        const existingRecipe = await recipesCollection.findOne(
+          { id },
+          { projection: { _id: 0, media_url: 1 } }
+        );
+        if (!existingRecipe) {
+          return res.status(404).json({ message: "Recipe not found." });
+        }
+
+        const title = normalizeText(req.body?.title);
+        const ingredientsText = normalizeText(req.body?.ingredientsText);
+        const instructionsText = normalizeText(req.body?.instructionsText);
+        const mediaUrl = normalizeText(req.body?.mediaUrl) || null;
+        const mediaType = normalizeText(req.body?.mediaType) || null;
+        const mediaName = req.body?.mediaName
+          ? String(req.body.mediaName)
+          : toMediaName(mediaUrl);
+        const published = normalizePublished(req.body?.published);
+        const description = instructionsText;
+
+        if (!title || !description) {
+          return res.status(400).json({
+            message: "Title and instructions are required.",
+          });
+        }
+
+        if (published === 1) {
+          const authorEmail = sessionUser?.email || null;
+          if (authorEmail) {
+            const count = await recipesCollection.countDocuments({
+              author_email: authorEmail,
+              published: 1,
+              id: { $ne: id },
+            });
+            if (count >= PUBLISH_QUOTA) {
+              return res.status(429).json({
+                message: `Yayinlama kotaniza ulastiniz (${PUBLISH_QUOTA} tarif). Birini taslaga alip tekrar deneyin.`,
+              });
+            }
+          }
+        }
+
+        const result = await recipesCollection.updateOne(
+          { id },
+          {
+            $set: {
+              title,
+              description,
+              ingredients_text: ingredientsText || null,
+              instructions_text: instructionsText || null,
+              media_name: mediaName,
+              media_url: mediaUrl,
+              media_type: mediaType,
+              published,
+            },
+          }
+        );
+
+        if (!result.matchedCount) {
+          return res.status(404).json({ message: "Recipe not found." });
+        }
+
+        if (existingRecipe.media_url && existingRecipe.media_url !== mediaUrl) {
+          const remaining = await recipesCollection.countDocuments({
+            media_url: existingRecipe.media_url,
+            id: { $ne: id },
+          });
+          if (remaining === 0) {
+            await removeLocalUploadFile(existingRecipe.media_url);
+          }
+        }
+
+        return res.status(200).json({ message: "Recipe updated successfully." });
+      }
+
+      if (req.method === "DELETE") {
+        const id = Number(req.query?.id || req.body?.id);
+        if (!Number.isInteger(id) || id <= 0) {
+          return res.status(400).json({ message: "Valid recipe id is required." });
+        }
+
+        const existingRecipe = await recipesCollection.findOne(
+          { id },
+          { projection: { _id: 0, media_url: 1 } }
+        );
+        if (!existingRecipe) {
+          return res.status(404).json({ message: "Recipe not found." });
+        }
+
+        const result = await recipesCollection.deleteOne({ id });
+        if (!result.deletedCount) {
+          return res.status(404).json({ message: "Recipe not found." });
+        }
+
+        if (existingRecipe.media_url) {
+          const remaining = await recipesCollection.countDocuments({
+            media_url: existingRecipe.media_url,
+          });
+          if (remaining === 0) {
+            await removeLocalUploadFile(existingRecipe.media_url);
+          }
+        }
+
+        return res.status(200).json({ message: "Recipe deleted successfully." });
+      }
+
+      return res.status(405).json({ message: "Method not allowed" });
+    }
+
     const db = await getDb();
 
     if (req.method === "GET") {
@@ -69,7 +296,7 @@ export default async function handler(req, res) {
       const mediaName = req.body?.mediaName
         ? String(req.body.mediaName)
         : toMediaName(mediaUrl);
-      const authorEmail = req.body?.authorEmail ? normalizeText(req.body.authorEmail) : null;
+      const authorEmail = sessionUser?.email || null;
       const published = normalizePublished(req.body?.published);
 
       if (!title || !description) {
@@ -128,6 +355,14 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "Valid recipe id is required." });
       }
 
+      const existingRecipe = await db.get(
+        `SELECT media_url FROM recipes WHERE id = ?`,
+        id
+      );
+      if (!existingRecipe) {
+        return res.status(404).json({ message: "Recipe not found." });
+      }
+
       const title = normalizeText(req.body?.title);
       const ingredientsText = normalizeText(req.body?.ingredientsText);
       const instructionsText = normalizeText(req.body?.instructionsText);
@@ -146,9 +381,7 @@ export default async function handler(req, res) {
       }
 
       if (published === 1) {
-        const authorEmail = req.body?.authorEmail
-          ? normalizeText(req.body.authorEmail)
-          : null;
+        const authorEmail = sessionUser?.email || null;
         if (authorEmail) {
           const { count } = await db.get(
             `SELECT COUNT(*) AS count FROM recipes WHERE author_email = ? AND published = 1 AND id != ?`,
@@ -192,6 +425,17 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: "Recipe not found." });
       }
 
+      if (existingRecipe.media_url && existingRecipe.media_url !== mediaUrl) {
+        const { count } = await db.get(
+          `SELECT COUNT(*) AS count FROM recipes WHERE media_url = ? AND id != ?`,
+          existingRecipe.media_url,
+          id
+        );
+        if (count === 0) {
+          await removeLocalUploadFile(existingRecipe.media_url);
+        }
+      }
+
       return res.status(200).json({ message: "Recipe updated successfully." });
     }
 
@@ -201,9 +445,27 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "Valid recipe id is required." });
       }
 
+      const existingRecipe = await db.get(
+        `SELECT media_url FROM recipes WHERE id = ?`,
+        id
+      );
+      if (!existingRecipe) {
+        return res.status(404).json({ message: "Recipe not found." });
+      }
+
       const result = await db.run(`DELETE FROM recipes WHERE id = ?`, id);
       if (!result.changes) {
         return res.status(404).json({ message: "Recipe not found." });
+      }
+
+      if (existingRecipe.media_url) {
+        const { count } = await db.get(
+          `SELECT COUNT(*) AS count FROM recipes WHERE media_url = ?`,
+          existingRecipe.media_url
+        );
+        if (count === 0) {
+          await removeLocalUploadFile(existingRecipe.media_url);
+        }
       }
 
       return res.status(200).json({ message: "Recipe deleted successfully." });

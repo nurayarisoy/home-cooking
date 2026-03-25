@@ -35,3 +35,22 @@ Backend logic handled via Next.js API routes with simple data persistence using 
 JSON-based recipe data management for easy manipulation and storage.
 
 Designed for scalability to support features like user favorites, recipe categorization, and AI-driven image generation in future updates.
+
+## Environment Variables
+
+For persistent data on Vercel, set MongoDB environment variables:
+
+```bash
+MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>?retryWrites=true&w=majority
+MONGODB_DB=home_cooking
+SESSION_SECRET=replace-with-a-long-random-string
+```
+
+Optional local-only SQLite override:
+
+```bash
+DATABASE_PATH=/absolute/path/to/database.db
+```
+
+When `MONGODB_URI` is set, API routes use MongoDB as primary storage.
+If it is missing, the app falls back to SQLite.

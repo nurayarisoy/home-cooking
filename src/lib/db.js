@@ -5,6 +5,19 @@ import sqlite3 from "sqlite3";
 
 let dbPromise;
 
+function resolveDatabasePath() {
+  const configuredPath = process.env.DATABASE_PATH;
+  if (configuredPath) {
+    return configuredPath;
+  }
+
+  if (process.env.VERCEL) {
+    return path.join("/tmp", "home-cooking", "database.db");
+  }
+
+  return path.join(process.cwd(), "database", "database.db");
+}
+
 async function columnExists(db, tableName, columnName) {
   const columns = await db.all(`PRAGMA table_info(${tableName})`);
   return columns.some((column) => column.name === columnName);
@@ -52,10 +65,9 @@ async function initializeDatabase(db) {
 
 export async function getDb() {
   if (!dbPromise) {
-    const databaseDir = path.join(process.cwd(), "database");
+    const databasePath = resolveDatabasePath();
+    const databaseDir = path.dirname(databasePath);
     fs.mkdirSync(databaseDir, { recursive: true });
-
-    const databasePath = path.join(databaseDir, "database.db");
 
     dbPromise = open({
       filename: databasePath,

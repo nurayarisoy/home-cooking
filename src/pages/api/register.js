@@ -1,5 +1,6 @@
 import { getDb } from "../../lib/db";
 import { hashPassword } from "../../lib/auth";
+import { getMongoDb, isMongoConfigured, nextSequence } from "../../lib/mongo";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -27,6 +28,32 @@ export default async function handler(req, res) {
       ? Number(location.longitude)
       : null;
 
+    if (isMongoConfigured()) {
+      const db = await getMongoDb();
+      const users = db.collection("users");
+      const existingUser = await users.findOne({ email }, { projection: { _id: 1 } });
+
+      if (existingUser) {
+        return res.status(409).json({ message: "User already exists with this email." });
+      }
+
+      const { salt, hash } = hashPassword(password);
+      const id = await nextSequence("users");
+
+      await users.insertOne({
+        id,
+        username,
+        email,
+        password_hash: hash,
+        password_salt: salt,
+        location_lat: locationLat,
+        location_lng: locationLng,
+        created_at: new Date().toISOString(),
+      });
+
+      return res.status(201).json({ message: "Registration successful." });
+    }
+
     const db = await getDb();
     const existingUser = await db.get("SELECT id FROM users WHERE email = ?", email);
 
@@ -51,6 +78,9 @@ export default async function handler(req, res) {
 
     return res.status(201).json({ message: "Registration successful." });
   } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ message: "User already exists with this email." });
+    }
     console.error("Register API error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
