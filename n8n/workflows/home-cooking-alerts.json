@@ -1,0 +1,215 @@
+{
+  "name": "Home Cooking Alerts",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "Error_Trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const execution = $json.execution || {};\nconst workflow = $json.workflow || {};\nconst error = execution.error || {};\n\nconst workflowName = String(workflow.name || 'Unknown workflow');\nconst message = String(error.message || 'Unknown error');\nconst stack = String(error.stack || '').slice(0, 3000);\nconst when = new Date().toISOString();\n\nconst text = [\n  'Home Cooking n8n Alert',\n  `Workflow: ${workflowName}`,\n  `Time: ${when}`,\n  `Error: ${message}`,\n  stack ? `Stack: ${stack}` : ''\n].filter(Boolean).join('\\n');\n\nreturn [{\n  json: {\n    workflowName,\n    when,\n    errorMessage: message,\n    stack,\n    alertText: text,\n    telegramEnabled: Boolean($env.TELEGRAM_BOT_TOKEN && $env.TELEGRAM_CHAT_ID),\n    emailEnabled: Boolean($env.ALERT_TO_EMAIL && $env.ALERT_FROM_EMAIL)\n  }\n}];"
+      },
+      "id": "Code_Format_Alert",
+      "name": "Format Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.telegramEnabled}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "IF_Telegram_Enabled",
+      "name": "Telegram Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": $env.TELEGRAM_CHAT_ID,\n  \"text\": $json.alertText\n}",
+        "options": {}
+      },
+      "id": "HTTP_Send_Telegram",
+      "name": "Send Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -120,
+        -40
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.emailEnabled}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "IF_Email_Enabled",
+      "name": "Email Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{$env.ALERT_FROM_EMAIL}}",
+        "toEmail": "={{$env.ALERT_TO_EMAIL}}",
+        "subject": "=[Home Cooking] n8n error in {{$json.workflowName}}",
+        "message": "={{$json.alertText}}",
+        "options": {}
+      },
+      "id": "Email_Send_Alert",
+      "name": "Send Email Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -120,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "mode": "wait"
+      },
+      "id": "Merge_Alert_Channels",
+      "name": "Merge Alert Channels",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        140,
+        120
+      ]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Alert": {
+      "main": [
+        [
+          {
+            "node": "Telegram Enabled?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge Alert Channels",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send Telegram": {
+      "main": [
+        [
+          {
+            "node": "Merge Alert Channels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Send Email Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge Alert Channels",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send Email Alert": {
+      "main": [
+        [
+          {
+            "node": "Merge Alert Channels",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

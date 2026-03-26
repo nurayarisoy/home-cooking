@@ -1,0 +1,426 @@
+{
+  "name": "Home Cooking YouTube Direct Upload",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "home-cooking-youtube-direct",
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "id": "Webhook_Trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1320,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{($json.headers?.['x-webhook-secret'] || $json.headers?.['X-Webhook-Secret'] || '') === $env.N8N_SOCIAL_WEBHOOK_SECRET}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "IF_Secret_Valid",
+      "name": "Secret Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1100,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":false,\"message\":\"Unauthorized webhook\"}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "Respond_Unauthorized",
+      "name": "Respond Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nconst title = String(body.title || '').trim().slice(0, 100) || 'Home Cooking Recipe';\nconst description = String(body.description || '').trim().slice(0, 4900);\nconst mediaUrl = String(body.mediaUrl || '').trim();\nconst tags = Array.isArray(body.tags) ? body.tags.map((v) => String(v).trim()).filter(Boolean) : [];\nconst privacyStatus = String(body.privacyStatus || 'public');\n\nconst mimeType = mediaUrl.match(/\\.(mp4|m4v|mov|webm)(\\?.*)?$/i) ? 'video/mp4' : 'application/octet-stream';\n\nif (!mediaUrl) {\n  throw new Error('mediaUrl is required for YouTube direct upload workflow');\n}\n\nreturn [{\n  json: {\n    title,\n    description,\n    mediaUrl,\n    tags,\n    privacyStatus,\n    mimeType\n  }\n}];"
+      },
+      "id": "Code_Normalize",
+      "name": "Normalize YouTube Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://oauth2.googleapis.com/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "client_id",
+              "value": "={{$env.YOUTUBE_CLIENT_ID}}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{$env.YOUTUBE_CLIENT_SECRET}}"
+            },
+            {
+              "name": "refresh_token",
+              "value": "={{$env.YOUTUBE_REFRESH_TOKEN}}"
+            },
+            {
+              "name": "grant_type",
+              "value": "refresh_token"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "HTTP_Refresh_Token",
+      "name": "Refresh YouTube Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        200
+      ],
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 4000
+    },
+    {
+      "parameters": {
+        "jsCode": "const token = String($json.access_token || '').trim();\nif (!token) {\n  throw new Error('YouTube access token missing after refresh');\n}\nreturn [{ json: { youtubeAccessToken: token } }];"
+      },
+      "id": "Code_Extract_Token",
+      "name": "Extract Access Token",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine"
+      },
+      "id": "Merge_Payload_Token",
+      "name": "Merge Payload + Token",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -200,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{$json.mediaUrl}}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "HTTP_Download_Media",
+      "name": "Download Media",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        20,
+        -120
+      ],
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 4000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$json.youtubeAccessToken}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=UTF-8"
+            },
+            {
+              "name": "X-Upload-Content-Type",
+              "value": "={{$json.mimeType}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"snippet\": {\n    \"title\": $json.title,\n    \"description\": $json.description,\n    \"tags\": $json.tags,\n    \"categoryId\": \"22\"\n  },\n  \"status\": {\n    \"privacyStatus\": $json.privacyStatus,\n    \"selfDeclaredMadeForKids\": false\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "string"
+            }
+          }
+        }
+      },
+      "id": "HTTP_Init_Resumable",
+      "name": "Init Resumable Session",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        20,
+        180
+      ],
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 4000
+    },
+    {
+      "parameters": {
+        "jsCode": "const uploadUrl = $json.headers?.location || $json.headers?.Location || null;\nif (!uploadUrl) {\n  throw new Error('YouTube upload URL missing in init response headers');\n}\nreturn [{ json: { youtubeUploadUrl: uploadUrl } }];"
+      },
+      "id": "Code_Extract_Upload_Url",
+      "name": "Extract Upload URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine"
+      },
+      "id": "Merge_Binary_And_Url",
+      "name": "Merge Binary + Upload URL",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        460,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{$json.youtubeUploadUrl}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$json.youtubeAccessToken}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "={{$json.mimeType || 'application/octet-stream'}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "HTTP_Upload_Binary",
+      "name": "Upload Binary To YouTube",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        20
+      ],
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":true,\"message\":\"YouTube direct upload completed\",\"result\":$json}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "Respond_Success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        900,
+        20
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Secret Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secret Valid?": {
+      "main": [
+        [
+          {
+            "node": "Normalize YouTube Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize YouTube Payload": {
+      "main": [
+        [
+          {
+            "node": "Merge Payload + Token",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Refresh YouTube Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refresh YouTube Token": {
+      "main": [
+        [
+          {
+            "node": "Extract Access Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Access Token": {
+      "main": [
+        [
+          {
+            "node": "Merge Payload + Token",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Payload + Token": {
+      "main": [
+        [
+          {
+            "node": "Download Media",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Init Resumable Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Media": {
+      "main": [
+        [
+          {
+            "node": "Merge Binary + Upload URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Resumable Session": {
+      "main": [
+        [
+          {
+            "node": "Extract Upload URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Upload URL": {
+      "main": [
+        [
+          {
+            "node": "Merge Binary + Upload URL",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Binary + Upload URL": {
+      "main": [
+        [
+          {
+            "node": "Upload Binary To YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Binary To YouTube": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,5 +1,19 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## CI Status Badge
+
+After you connect this project to GitHub, replace `<OWNER>/<REPO>` below with your repository slug.
+
+```md
+![CI](https://github.com/<OWNER>/<REPO>/actions/workflows/ci.yml/badge.svg)
+```
+
+Optional linkable version:
+
+```md
+[![CI](https://github.com/<OWNER>/<REPO>/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/<REPO>/actions/workflows/ci.yml)
+```
+
 ## Getting Started
 
 First, run the development server:
@@ -51,6 +65,18 @@ Optional local-only SQLite override:
 ```bash
 DATABASE_PATH=/absolute/path/to/database.db
 ```
+
+Optional social auto-publish (n8n webhook):
+
+```bash
+N8N_SOCIAL_WEBHOOK_URL=https://your-n8n-host/webhook/home-cooking-social
+N8N_SOCIAL_WEBHOOK_SECRET=replace-with-random-secret
+SITE_URL=https://your-public-site-url
+```
+
+When a recipe is created as published, or moved from draft to published,
+the API sends a webhook event (`recipe.publish`) to n8n.
+If webhook is missing or fails, recipe save still succeeds.
 
 When `MONGODB_URI` is set, API routes use MongoDB as primary storage.
 If it is missing, the app falls back to SQLite.

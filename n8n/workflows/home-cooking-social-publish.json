@@ -1,0 +1,605 @@
+{
+  "name": "Home Cooking Social Publish",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "home-cooking-social",
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "id": "Webhook_Trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1260,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{($json.headers?.['x-webhook-secret'] || $json.headers?.['X-Webhook-Secret'] || '') === $env.N8N_SOCIAL_WEBHOOK_SECRET}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "IF_Secret_Valid",
+      "name": "Secret Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":false,\"message\":\"Unauthorized webhook\"}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "Respond_Unauthorized",
+      "name": "Respond Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nconst recipe = body.recipe || {};\nconst platforms = Array.isArray(body.platforms) ? body.platforms : [];\n\nconst title = String(recipe.title || '').trim().slice(0, 95);\nconst ingredientsText = String(recipe.ingredientsText || '').trim();\nconst instructionsText = String(recipe.instructionsText || '').trim();\nconst mediaUrl = String(recipe.mediaUrl || '').trim();\nconst mediaType = String(recipe.mediaType || '').trim().toLowerCase() || 'image';\nconst isVideo = mediaType === 'video';\n\nconst baseCaption = [\n  title,\n  '',\n  ingredientsText ? `Ingredients: ${ingredientsText}` : '',\n  instructionsText ? `Instructions: ${instructionsText}` : '',\n  '',\n  '#homecooking #recipe #food #foodie #cooking'\n].filter(Boolean).join('\\n');\n\nconst youtubeDescription = [\n  ingredientsText ? `Ingredients:\\n${ingredientsText}` : '',\n  '',\n  instructionsText ? `Instructions:\\n${instructionsText}` : '',\n  '',\n  '#shorts #recipe #homecooking'\n].filter(Boolean).join('\\n');\n\nreturn [{\n  json: {\n    event: body.event || 'recipe.publish',\n    action: body.action || 'published',\n    occurredAt: body.occurredAt || new Date().toISOString(),\n    platforms,\n    title,\n    mediaUrl,\n    mediaType,\n    isVideo,\n    instagramCaption: baseCaption.slice(0, 2200),\n    youtubeTitle: title.slice(0, 100),\n    youtubeDescription: youtubeDescription.slice(0, 4900),\n    tags: ['homecooking', 'recipe', 'food', 'cooking'],\n    recipeId: recipe.id || null,\n    authorEmail: recipe.authorEmail || null\n  }\n}];"
+      },
+      "id": "Code_Normalize_Payload",
+      "name": "Normalize Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -820,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{Array.isArray($json.platforms) && $json.platforms.includes('instagram')}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "IF_Instagram_Enabled",
+      "name": "Instagram Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.isVideo === true}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "IF_Instagram_Video",
+      "name": "Instagram Video?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v23.0/{{$env.IG_USER_ID}}/media",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image_url",
+              "value": "={{$json.mediaUrl}}"
+            },
+            {
+              "name": "caption",
+              "value": "={{$json.instagramCaption}}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{$env.IG_ACCESS_TOKEN}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "HTTP_Instagram_Create_Image",
+      "name": "Instagram Create Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -140,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v23.0/{{$env.IG_USER_ID}}/media",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "REELS"
+            },
+            {
+              "name": "video_url",
+              "value": "={{$json.mediaUrl}}"
+            },
+            {
+              "name": "caption",
+              "value": "={{$json.instagramCaption}}"
+            },
+            {
+              "name": "share_to_feed",
+              "value": "true"
+            },
+            {
+              "name": "access_token",
+              "value": "={{$env.IG_ACCESS_TOKEN}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "HTTP_Instagram_Create_Reel",
+      "name": "Instagram Create Reel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -140,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v23.0/{{$env.IG_USER_ID}}/media_publish",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{$json.id}}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{$env.IG_ACCESS_TOKEN}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "HTTP_Instagram_Publish",
+      "name": "Instagram Publish",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{Array.isArray($json.platforms) && $json.platforms.includes('youtube')}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "IF_YouTube_Enabled",
+      "name": "YouTube Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{String($env.YOUTUBE_DIRECT_ENABLED || '').toLowerCase() === 'true'}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "IF_YouTube_Direct",
+      "name": "YouTube Direct Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.YOUTUBE_ACCESS_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=UTF-8"
+            },
+            {
+              "name": "X-Upload-Content-Type",
+              "value": "={{$json.isVideo ? 'video/mp4' : 'image/jpeg'}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"snippet\": {\n    \"title\": $json.youtubeTitle,\n    \"description\": $json.youtubeDescription,\n    \"tags\": $json.tags,\n    \"categoryId\": \"22\"\n  },\n  \"status\": {\n    \"privacyStatus\": \"public\",\n    \"selfDeclaredMadeForKids\": false\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "string"
+            }
+          }
+        }
+      },
+      "id": "HTTP_YouTube_Init_Resumable",
+      "name": "YouTube Init Resumable",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -140,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const uploadUrl = $json.headers?.location || $json.headers?.Location || null;\nreturn [{\n  json: {\n    ...$json,\n    youtubeUploadUrl: uploadUrl,\n    note: uploadUrl\n      ? 'Resumable session created. Upload binary video bytes to youtubeUploadUrl in next step.'\n      : 'No resumable upload URL found in response headers.'\n  }\n}];"
+      },
+      "id": "Code_YouTube_Session_Extract",
+      "name": "YouTube Session Extract",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.YOUTUBE_PUBLISH_WEBHOOK_URL}}",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"title\": $json.youtubeTitle,\n  \"description\": $json.youtubeDescription,\n  \"mediaUrl\": $json.mediaUrl,\n  \"tags\": $json.tags,\n  \"privacyStatus\": \"public\",\n  \"recipeId\": $json.recipeId,\n  \"authorEmail\": $json.authorEmail\n}",
+        "options": {}
+      },
+      "id": "HTTP_YouTube_Publish_Relay",
+      "name": "YouTube Publish Relay",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -140,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "wait"
+      },
+      "id": "Merge_Instagram_Result",
+      "name": "Merge Instagram Result",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        300,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "wait"
+      },
+      "id": "Merge_YouTube_Result",
+      "name": "Merge YouTube Result",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        300,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "wait"
+      },
+      "id": "Merge_All_Done",
+      "name": "Merge All Done",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        540,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":true,\"message\":\"Social workflow completed\"}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "Respond_Success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        760,
+        120
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Secret Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secret Valid?": {
+      "main": [
+        [
+          {
+            "node": "Normalize Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Payload": {
+      "main": [
+        [
+          {
+            "node": "Instagram Enabled?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Instagram Video?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge Instagram Result",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Instagram Video?": {
+      "main": [
+        [
+          {
+            "node": "Instagram Create Reel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Instagram Create Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Create Image": {
+      "main": [
+        [
+          {
+            "node": "Instagram Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Create Reel": {
+      "main": [
+        [
+          {
+            "node": "Instagram Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Publish": {
+      "main": [
+        [
+          {
+            "node": "Merge Instagram Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Enabled?": {
+      "main": [
+        [
+          {
+            "node": "YouTube Direct Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge YouTube Result",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "YouTube Direct Enabled?": {
+      "main": [
+        [
+          {
+            "node": "YouTube Init Resumable",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "YouTube Publish Relay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Init Resumable": {
+      "main": [
+        [
+          {
+            "node": "YouTube Session Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Session Extract": {
+      "main": [
+        [
+          {
+            "node": "Merge YouTube Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Publish Relay": {
+      "main": [
+        [
+          {
+            "node": "Merge YouTube Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Instagram Result": {
+      "main": [
+        [
+          {
+            "node": "Merge All Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge YouTube Result": {
+      "main": [
+        [
+          {
+            "node": "Merge All Done",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge All Done": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

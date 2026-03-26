@@ -1,6 +1,7 @@
 import { getDb } from "../../lib/db";
 import { getMongoDb, isMongoConfigured, nextSequence } from "../../lib/mongo";
 import { getSessionUserFromRequest } from "../../lib/session";
+import { dispatchRecipeForSocial } from "../../lib/socialDispatch";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -141,9 +142,33 @@ export default async function handler(req, res) {
           created_at: new Date().toISOString(),
         });
 
+        let socialDispatch = { dispatched: false, reason: "not-published" };
+        if (published === 1) {
+          try {
+            socialDispatch = await dispatchRecipeForSocial({
+              action: "created",
+              authorEmail,
+              platforms: req.body?.socialPlatforms,
+              recipe: {
+                id,
+                title,
+                ingredientsText,
+                instructionsText,
+                mediaUrl,
+                mediaType,
+                createdAt: new Date().toISOString(),
+              },
+            });
+          } catch (error) {
+            console.error("Social dispatch error (create):", error);
+            socialDispatch = { dispatched: false, reason: "dispatch-failed" };
+          }
+        }
+
         return res.status(201).json({
           message: "Recipe created successfully.",
           id,
+          socialDispatch,
         });
       }
 
@@ -155,7 +180,7 @@ export default async function handler(req, res) {
 
         const existingRecipe = await recipesCollection.findOne(
           { id },
-          { projection: { _id: 0, media_url: 1 } }
+          { projection: { _id: 0, media_url: 1, published: 1, created_at: 1 } }
         );
         if (!existingRecipe) {
           return res.status(404).json({ message: "Recipe not found." });
@@ -224,7 +249,33 @@ export default async function handler(req, res) {
           }
         }
 
-        return res.status(200).json({ message: "Recipe updated successfully." });
+        let socialDispatch = { dispatched: false, reason: "not-published" };
+        if (published === 1 && Number(existingRecipe.published || 0) !== 1) {
+          try {
+            socialDispatch = await dispatchRecipeForSocial({
+              action: "published",
+              authorEmail: sessionUser?.email || null,
+              platforms: req.body?.socialPlatforms,
+              recipe: {
+                id,
+                title,
+                ingredientsText,
+                instructionsText,
+                mediaUrl,
+                mediaType,
+                createdAt: existingRecipe.created_at || null,
+              },
+            });
+          } catch (error) {
+            console.error("Social dispatch error (publish):", error);
+            socialDispatch = { dispatched: false, reason: "dispatch-failed" };
+          }
+        }
+
+        return res.status(200).json({
+          message: "Recipe updated successfully.",
+          socialDispatch,
+        });
       }
 
       if (req.method === "DELETE") {
@@ -343,9 +394,33 @@ export default async function handler(req, res) {
         authorEmail
       );
 
+      let socialDispatch = { dispatched: false, reason: "not-published" };
+      if (published === 1) {
+        try {
+          socialDispatch = await dispatchRecipeForSocial({
+            action: "created",
+            authorEmail,
+            platforms: req.body?.socialPlatforms,
+            recipe: {
+              id: result.lastID,
+              title,
+              ingredientsText,
+              instructionsText,
+              mediaUrl,
+              mediaType,
+              createdAt: new Date().toISOString(),
+            },
+          });
+        } catch (error) {
+          console.error("Social dispatch error (create):", error);
+          socialDispatch = { dispatched: false, reason: "dispatch-failed" };
+        }
+      }
+
       return res.status(201).json({
         message: "Recipe created successfully.",
         id: result.lastID,
+        socialDispatch,
       });
     }
 
@@ -356,7 +431,7 @@ export default async function handler(req, res) {
       }
 
       const existingRecipe = await db.get(
-        `SELECT media_url FROM recipes WHERE id = ?`,
+        `SELECT media_url, published, created_at FROM recipes WHERE id = ?`,
         id
       );
       if (!existingRecipe) {
@@ -436,7 +511,33 @@ export default async function handler(req, res) {
         }
       }
 
-      return res.status(200).json({ message: "Recipe updated successfully." });
+      let socialDispatch = { dispatched: false, reason: "not-published" };
+      if (published === 1 && Number(existingRecipe.published || 0) !== 1) {
+        try {
+          socialDispatch = await dispatchRecipeForSocial({
+            action: "published",
+            authorEmail: sessionUser?.email || null,
+            platforms: req.body?.socialPlatforms,
+            recipe: {
+              id,
+              title,
+              ingredientsText,
+              instructionsText,
+              mediaUrl,
+              mediaType,
+              createdAt: existingRecipe.created_at || null,
+            },
+          });
+        } catch (error) {
+          console.error("Social dispatch error (publish):", error);
+          socialDispatch = { dispatched: false, reason: "dispatch-failed" };
+        }
+      }
+
+      return res.status(200).json({
+        message: "Recipe updated successfully.",
+        socialDispatch,
+      });
     }
 
     if (req.method === "DELETE") {
