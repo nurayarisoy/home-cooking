@@ -30,6 +30,16 @@ function KeyRow({ name, value }) {
   );
 }
 
+function MetricCard({ title, value, helper }) {
+  return (
+    <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{title}</p>
+      <p className="mt-2 font-display text-3xl text-slate-900">{value}</p>
+      <p className="mt-1 text-xs text-slate-500">{helper}</p>
+    </article>
+  );
+}
+
 export default function AdminOpsPage() {
   const [statusKey, setStatusKey] = useState("");
   const [data, setData] = useState(null);
@@ -64,6 +74,7 @@ export default function AdminOpsPage() {
     () => Object.entries(data?.alerting?.entries || {}),
     [data]
   );
+  const metrics = data?.metrics;
 
   const loadStatus = useCallback(async () => {
     if (inFlightRef.current) {
@@ -210,6 +221,24 @@ export default function AdminOpsPage() {
 
           {data ? (
             <>
+              <div className="mb-6 grid gap-4 md:grid-cols-3">
+                <MetricCard
+                  title="Registrations"
+                  value={metrics?.totals?.registrations ?? 0}
+                  helper={`Last 24h: ${metrics?.last24h?.registrations ?? 0}`}
+                />
+                <MetricCard
+                  title="Recipes Created"
+                  value={metrics?.totals?.recipesCreated ?? 0}
+                  helper={`Last 24h: ${metrics?.last24h?.recipesCreated ?? 0}`}
+                />
+                <MetricCard
+                  title="Publish Rate"
+                  value={`${metrics?.totals?.publishRate ?? 0}%`}
+                  helper={`Last 24h: ${metrics?.last24h?.publishRate ?? 0}%`}
+                />
+              </div>
+
               <div className="mb-6 flex flex-wrap items-center gap-3">
                 <StatusPill ok={Boolean(data.ok)} label={data.ok ? "overall ready" : "overall not ready"} />
                 <StatusPill
@@ -224,6 +253,9 @@ export default function AdminOpsPage() {
                   ok={Boolean(data?.alerting?.allConfigured)}
                   label={data?.alerting?.allConfigured ? "alerting full" : "alerting partial"}
                 />
+                <span className="text-xs text-slate-500">
+                  KPI source: {metrics?.source || "n/a"}
+                </span>
                 <span className="text-xs text-slate-500">Checked: {data.checkedAt}</span>
               </div>
 
