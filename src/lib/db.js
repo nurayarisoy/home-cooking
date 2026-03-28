@@ -61,6 +61,18 @@ async function initializeDatabase(db) {
   await ensureColumn(db, "recipes", "media_url", "TEXT");
   await ensureColumn(db, "recipes", "media_type", "TEXT");
   await ensureColumn(db, "recipes", "published", "INTEGER DEFAULT 0");
+
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS ai_suggestion_feedback (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      vote TEXT NOT NULL CHECK(vote IN ('up', 'down')),
+      recipe_name TEXT,
+      ingredients TEXT,
+      diets TEXT,
+      servings INTEGER,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
 }
 
 export async function getDb() {

@@ -1,9 +1,58 @@
+const MAX_INGREDIENTS = 12;
+const MAX_INGREDIENT_LENGTH = 60;
+const ALLOWED_INGREDIENT_RE = /^[\p{L}\p{N}\s\-',.()]+$/u;
+
+const allowedDietTags = new Set(["high-protein", "vegetarian", "quick-meal", "low-carb"]);
+
 function toTitleCase(value) {
   if (!value) return "";
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 
-const allowedDietTags = new Set(["high-protein", "vegetarian", "quick-meal", "low-carb"]);
+function sanitizeIngredient(raw) {
+  const trimmed = String(raw || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .slice(0, MAX_INGREDIENT_LENGTH);
+
+  return ALLOWED_INGREDIENT_RE.test(trimmed) ? trimmed : null;
+}
+
+const RECIPE_STYLES = {
+  "vegetarian+high-protein": "Garden Protein",
+  vegetarian: "Garden",
+  "high-protein": "Power",
+  "low-carb": "Light",
+  default: "Home",
+};
+
+const SKILLET_VARIANTS = ["Skillet", "Bowl", "Pan", "Plate", "Mix"];
+
+function pickVariant(leadIngredient) {
+  const code = leadIngredient
+    .split("")
+    .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return SKILLET_VARIANTS[code % SKILLET_VARIANTS.length];
+}
+
+function validateAndBuildResponse({ ingredients, diets, servings }) {
+  const errors = [];
+
+  if (ingredients.length === 0) {
+    errors.push("Please provide at least one ingredient.");
+  }
+
+  if (ingredients.length > MAX_INGREDIENTS) {
+    errors.push(`Maximum ${MAX_INGREDIENTS} ingredients allowed.`);
+  }
+
+  const badIngredients = ingredients.filter((item) => !sanitizeIngredient(item));
+  if (badIngredients.length > 0) {
+    errors.push(`Invalid ingredient(s): ${badIngredients.slice(0, 3).join(", ")}.`);
+  }
+
+  return errors;
+}
 
 function getSafeServings(value) {
   const parsed = Number.parseInt(String(value ?? ""), 10);
@@ -19,14 +68,25 @@ function normalizeDiets(value) {
   );
 }
 
+function normalizeAvoids(value) {
+  if (!Array.isArray(value)) return [];
+
+  return [...new Set(value.map((item) => sanitizeIngredient(item)).filter(Boolean))].slice(
+    0,
+    MAX_INGREDIENTS
+  );
+}
+
 function buildRecipeStyle(diets) {
   if (diets.includes("vegetarian") && diets.includes("high-protein")) {
-    return "Garden Protein";
+    return RECIPE_STYLES["vegetarian+high-protein"];
   }
-  if (diets.includes("vegetarian")) return "Garden";
-  if (diets.includes("high-protein")) return "Power";
-  if (diets.includes("low-carb")) return "Light";
-  return "Home";
+  for (const key of Object.keys(RECIPE_STYLES)) {
+    if (key !== "default" && key !== "vegetarian+high-protein" && diets.includes(key)) {
+      return RECIPE_STYLES[key];
+    }
+  }
+  return RECIPE_STYLES.default;
 }
 
 function buildAdditionalIngredients(diets, servings) {
@@ -76,27 +136,55 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const ingredients = Array.isArray(req.body?.ingredients)
+  const rawIngredients = Array.isArray(req.body?.ingredients)
     ? req.body.ingredients
-        .map((item) => String(item || "").trim())
-        .filter(Boolean)
     : [];
+
+  const ingredients = rawIngredients
+    .map((item) => sanitizeIngredient(item))
+    .filter(Boolean)
+    .slice(0, MAX_INGREDIENTS);
+
   const diets = normalizeDiets(req.body?.preferences?.diets);
+  const avoids = normalizeAvoids(req.body?.preferences?.avoids);
   const servings = getSafeServings(req.body?.preferences?.servings);
 
-  if (ingredients.length === 0) {
-    return res.status(400).json({ message: "Please provide at least one ingredient." });
+  const errors = validateAndBuildResponse({ ingredients, diets, servings });
+  if (errors.length > 0) {
+    return res.status(400).json({ message: errors[0] });
   }
 
-  const leadIngredient = toTitleCase(ingredients[0]);
-  const recipeStyle = buildRecipeStyle(diets);
-  const recipeName = `${recipeStyle} ${leadIngredient} Skillet`;
+  let leadIngredient;
+  let recipeName;
+  try {
+    leadIngredient = toTitleCase(ingredients[0]);
+    const recipeStyle = buildRecipeStyle(diets);
+    const variant = pickVariant(leadIngredient);
+    recipeName = `${recipeStyle} ${leadIngredient} ${variant}`;
+  } catch {
+    leadIngredient = "Ingredient";
+    recipeName = "Home Cooking Special";
+  }
 
-  const additions = buildAdditionalIngredients(diets, servings);
-  const mergedIngredients = [...new Set([...ingredients, ...additions])];
-  const instructions = buildInstructions({ leadIngredient, servings, diets });
+  let mergedIngredients;
+  let instructions;
+  try {
+    const additions = buildAdditionalIngredients(diets, servings);
+    mergedIngredients = [...new Set([...ingredients, ...additions])].filter(
+      (item) => !avoids.includes(item)
+    );
+    instructions = buildInstructions({ leadIngredient, servings, diets });
+  } catch {
+    mergedIngredients = ingredients.filter((item) => !avoids.includes(item));
+    instructions = `Combine your ingredients and cook on medium heat for 15 minutes. Season to taste and serve warm for ${servings} ${servings === 1 ? "person" : "people"}.`;
+  }
+
+  if (!recipeName || !instructions || mergedIngredients.length === 0) {
+    return res.status(500).json({ message: "Could not generate a recipe. Please try different ingredients." });
+  }
 
   const dietSummary = diets.length > 0 ? ` (${diets.join(", ")})` : "";
+  const avoidSummary = avoids.length > 0 ? ` without ${avoids.slice(0, 3).join(", ")}` : "";
 
   const recipe = {
     name: recipeName,
@@ -106,7 +194,7 @@ export default async function handler(req, res) {
   };
 
   return res.status(200).json({
-    suggestion: `Try a ${servings}-serving ${recipeName}${dietSummary} with your selected ingredients.`,
+    suggestion: `Try a ${servings}-serving ${recipeName}${dietSummary}${avoidSummary} with your selected ingredients.`,
     recipe,
   });
 }

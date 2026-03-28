@@ -81,4 +81,26 @@ describe("AI Recommend API integration", () => {
     expect(res.statusCode).toBe(400);
     expect(res.jsonBody).toEqual({ message: "Please provide at least one ingredient." });
   });
+
+  test("excludes avoided ingredients from generated recipe", async () => {
+    const { req, res } = createMockReqRes({
+      method: "POST",
+      body: {
+        ingredients: ["egg", "garlic", "mushroom"],
+        preferences: {
+          diets: ["high-protein"],
+          servings: 2,
+          avoids: ["chickpeas", "mushroom"],
+        },
+      },
+    });
+
+    await recommendHandler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.jsonBody?.suggestion).toContain("without chickpeas, mushroom");
+    expect(res.jsonBody?.recipe?.ingredients).not.toEqual(
+      expect.arrayContaining(["chickpeas", "mushroom"])
+    );
+  });
 });
