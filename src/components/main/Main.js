@@ -1,92 +1,82 @@
-import "../../../styles/tailwind.css";
+import Image from "next/image";
+import Link from "next/link";
 
+const features = [
+  {
+    title: "Personalized recipes",
+    description: "Add ingredients and get an instant meal idea tailored to your pantry.",
+  },
+  {
+    title: "Publish with photos",
+    description: "Share beautiful recipes with images or video previews from your kitchen.",
+  },
+  {
+    title: "Track favorites",
+    description: "Save your best recipes and revisit them whenever inspiration strikes.",
+  },
+];
 
-// Main component
-const Main = ({ children }) => {
+const Main = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <main className="relative flex flex-col items-center justify-center flex-grow w-full overflow-hidden">
-        {/* Video bileşeni eklendi */}
-        <div className="relative w-full h-screen">
-  <img
-    src="/chef.webp"
-    alt="Home cooking background"
-    className="w-full h-screen object-cover"
-  />
-  <div className="absolute top-1/2 left-4 transform -translate-y-1/2 flex flex-col space-y-4">
-    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-      <img src="/facebook.png" alt="Facebook" className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg" />
-    </a>
-    <div className="bg-white ">
-  <img src="/x.png" alt="Facebook" className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg"/>
-</div>
-    <div>
-    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-      <img src="/instagram.png" alt="Instagram" className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg" />
-    </a>
-    </div>
-  </div>
-</div>
-
-        {children}
-
-        <div className="w-full bg-grid-pattern bg-blue-150 ">
-          {/* İlk satır - Başlık, açıklama ve resim */}
-          <div className="flex items-center justify-center mb-8">
-            {/* Sol tarafta PNG resim */}
-            <div className="w-1/4 mt-4  ">
-              <img
-                src="/logo.webp"
-                alt="Home Cooking Image"
-                className=" h-auto shadow-lg rounded-full "
-                style={{ boxShadow: "0 4px 6px rgba(0, 0, 255, 0.5) " }}
-              />
+    <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-100">
+      <div className="absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.22),transparent_40%)] pointer-events-none" />
+      <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-orange-700 shadow-sm ring-1 ring-orange-200">
+              <span>Yemek tariflerini yenile</span>
+              <span className="rounded-full bg-orange-600 px-2 py-1 text-white text-xs">Yeni</span>
             </div>
-
-            <div className="w-2/3 text-right  ">
-              <h1 className="text-center font-bold mb-4">Home Cooking</h1>
-              <p className="text-gray-700 text-center">
-                This is a sample description text that provides information
-                about the website.
-              </p>
-              <p className="mt-4 text-center   p-4 text-gray-600">
-                Home Cooking, sağlıklı ve lezzetli yemek tariflerinin
-                paylaşıldığı bir platformdur. Tariflerimizle evde harika
-                yemekler yapabilirsiniz.
-              </p>
+            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+              Evde pişir, paylaş, ilham ol.
+            </h1>
+            <p className="max-w-xl text-lg leading-8 text-slate-700">
+              Home Cooking ile malzemelerinden hızlıca yeni tarifler üret, kendi tariflerini paylaş ve herkesin mutfağına lezzet kat.
+            </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <Link href="/recibe" className="inline-flex items-center justify-center rounded-full bg-orange-600 px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-orange-700">
+                Tarif Önerisi Al
+              </Link>
+              <Link href="/kochen" className="inline-flex items-center justify-center rounded-full border border-orange-600 bg-white px-6 py-3 text-base font-semibold text-orange-700 shadow-sm transition hover:bg-orange-50">
+                Tarifini Paylaş
+              </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {features.map((feature) => (
+                <div key={feature.title} className="rounded-3xl border border-orange-200 bg-white/90 p-5 shadow-sm">
+                  <h3 className="text-sm font-semibold text-orange-700">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{feature.description}</p>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* İkinci satır - QR kodu ve resim */}
-          <div className="flex items-center justify-center">
-            {/* QR kodu */}
-            <a href="https://gravatar.com/nuraysuat" target="_blank" rel="noopener noreferrer">
-            <div className="w-1/2 text-center">
-              <img
-                src="/Layer 1.jpg"
-                alt="QR Code"
-                className="w-1/6 mx-auto shadow-lg rounded-md"
-              />
-                
-             
-
-            </div>
-            </a>
-           
-
-            {/* Yanına resim */}
-            <div className="w-1/2 mb-8">
-              <img
-                src="/logo2.webp"
-                alt="Additional Image"
-                className="w-full h-auto shadow-lg rounded-full"
-                style={{ boxShadow: "0 4px 6px rgba(0, 0, 255, 0.5)" }}
-              />
+          <div className="relative">
+            <div className="overflow-hidden rounded-[2rem] border border-orange-200 bg-white/90 p-4 shadow-2xl shadow-orange-200/20 backdrop-blur-xl">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem]">
+                <Image src="/chef.webp" alt="Cooking hero image" fill className="object-cover" />
+              </div>
+              <div className="mt-6 space-y-4">
+                <div className="rounded-3xl bg-orange-50 p-5">
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-700">Haftanın Reçetesi</p>
+                  <h2 className="mt-2 text-2xl font-bold text-slate-900">Kremalı mantarlı makarna</h2>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-3xl bg-slate-950 p-4 text-white shadow-sm">
+                    <p className="text-sm text-slate-300">Hazırlık</p>
+                    <p className="mt-2 text-xl font-semibold">15 dk</p>
+                  </div>
+                  <div className="rounded-3xl bg-slate-950 p-4 text-white shadow-sm">
+                    <p className="text-sm text-slate-300">Porsiyon</p>
+                    <p className="mt-2 text-xl font-semibold">4 kişi</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </section>
   );
 };
 

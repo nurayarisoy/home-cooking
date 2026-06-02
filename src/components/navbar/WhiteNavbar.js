@@ -1,19 +1,16 @@
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 import Link from "next/link";
-import { FaMapMarkerAlt } from 'react-icons/fa';
+import { Disclosure } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 const navigation = [
-  { name: "Home", href: "/", current: false },
-  { name: "About", href: "/about", current: false },
-  { name: "Contact", href: "/contact", current: false },
-  { name: "Login", href: "/login", current: false },
-  { name: "Register", href: "/register", current: false },
-  { name:"Recibe", href:"/recibe",current:false},
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
+  { name: "Recibe", href: "/recibe" },
+  { name: "Login", href: "/login" },
+  { name: "Register", href: "/register" },
 ];
 
 function classNames(...classes) {
@@ -22,88 +19,59 @@ function classNames(...classes) {
 
 const WhiteNavbar = () => {
   return (
-    <Disclosure as="nav" className="bg-black">
+    <Disclosure as="nav" className="bg-slate-950 text-white shadow-lg shadow-slate-900/10">
       {({ open }) => (
         <>
-          <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-            <div className="relative flex items-center justify-between h-16">
-              <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                <DisclosureButton className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                  <span className="sr-only">Open main menu</span>
-                  {open ? (
-                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                  )}
-                </DisclosureButton>
+          <div className="mx-auto max-w-7xl px-6 py-4 lg:px-8">
+            <div className="flex h-16 items-center justify-between gap-6">
+              <Link href="/" className="flex items-center gap-3">
+                <span className="relative h-12 w-12 rounded-full bg-orange-500/10 p-1">
+                  <Image src="/chef1.png" alt="Home Cooking" fill className="rounded-full object-cover" />
+                </span>
+                <span className="text-xl font-semibold tracking-tight text-white">Home Cooking</span>
+              </Link>
+
+              <div className="hidden md:flex items-center gap-4">
+                {navigation.slice(0, 4).map((item) => (
+                  <Link key={item.name} href={item.href} className="rounded-full px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 hover:text-white">
+                    {item.name}
+                  </Link>
+                ))}
+                <Link href="/locations" className="inline-flex items-center gap-2 rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-orange-500/20 transition hover:bg-orange-600">
+                  <FaMapMarkerAlt className="h-4 w-4" />
+                  Locations
+                </Link>
               </div>
-              <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex-shrink-0 transform hover:scale-175">
-                  <img
-                    className="h-12 w-auto animate-spin object-cover rounded-full"
-                    src="/chef1.png"
-                    alt="Logo"
-                  />
+
+              <div className="flex items-center gap-3">
+                <div className="hidden md:flex items-center gap-3">
+                  <Link href="/login" className="rounded-full border border-white/20 px-4 py-2 text-sm text-white transition hover:bg-white/10">
+                    Login
+                  </Link>
+                  <Link href="/register" className="rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">
+                    Register
+                  </Link>
                 </div>
-                <div className="ml-4 text-lg font-bold text-white hidden lg:block">
-                  Home Cooking
-                </div>
-                <div className="hidden sm:block sm:ml-6">
-                  <div className="flex space-x-4 items-center">
-                    {navigation.map((item) => (
-                      <Link key={item.name} href={item.href} legacyBehavior>
-                        <a
-                          className={classNames(
-                            "bg-red-500 text-white py-4 px-8 rounded transition duration-500 ease-in-out transform hover:scale-105",
-                            "block px-3 py-2 rounded-md text-base font-medium"
-                          )}
-                        >
-                          {item.name}
-                        </a>
-                      </Link>
-                    ))}
-                    {/* Location Icon */}
-                    <Link href="/locations" passHref legacyBehavior>
-                      <a className="text-white hover:text-gray-300 flex items-center">
-                        <FaMapMarkerAlt className="h-6 w-6" />
-                        <span className="ml-2">Locations</span>
-                      </a>
-                    </Link>
-                  </div>
-                </div>
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-full border border-white/20 p-2 text-white transition hover:bg-white/10 md:hidden">
+                  <span className="sr-only">Open main menu</span>
+                  {open ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+                </Disclosure.Button>
               </div>
             </div>
           </div>
 
-          <DisclosurePanel className="sm:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+          <Disclosure.Panel className="md:hidden">
+            <div className="space-y-2 px-6 pb-6">
               {navigation.map((item) => (
-                <DisclosureButton
-                  key={item.name}
-                  as="a"
-                  href={item.href}
-                  className={classNames(
-                    "bg-red-500 text-white py-4 px-8 rounded hover:bg-red-700",
-                    "block px-3 py-2 rounded-md text-base font-medium"
-                  )}
-                >
+                <Link key={item.name} href={item.href} className="block rounded-2xl bg-slate-900/90 px-4 py-3 text-base font-medium text-white transition hover:bg-slate-800">
                   {item.name}
-                </DisclosureButton>
+                </Link>
               ))}
-              {/* Location Icon */}
-              <DisclosureButton
-                as="a"
-                href="/locations"
-                className={classNames(
-                  "bg-red-500 text-white py-4 px-8 rounded hover:bg-red-700",
-                  "block px-3 py-2 rounded-md text-base font-medium flex items-center"
-                )}
-              >
-                <FaMapMarkerAlt className="h-5 w-5" />
-                <span className="ml-2">Locations</span>
-              </DisclosureButton>
+              <Link href="/locations" className="block rounded-2xl bg-orange-500 px-4 py-3 text-base font-medium text-white transition hover:bg-orange-600">
+                Locations
+              </Link>
             </div>
-          </DisclosurePanel>
+          </Disclosure.Panel>
         </>
       )}
     </Disclosure>

@@ -1,61 +1,70 @@
+import Image from "next/image";
+import Link from "next/link";
+
 const Footer = () => {
   return (
-    <footer className="bg-black text-white p-4">
-      <div className="flex flex-row ">
-        {/* Sol Bölüm: Home Cooking ve Paragraf */}
-        <div className="flex-1 flex flex-col justify-center p-4">
-          <h4 className="text-3xl font-bold mb-4">Home Cooking</h4>
-          <p className="text-lg">
-            Kunden haben die Möglichkeit, mithilfe von Google Maps nach Köchen
-            und Köchinnen in Ihrer Nähe zu suchen und Bestellungen aufzugeben.
-          </p>
+    <footer className="bg-slate-950 text-slate-200">
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-3">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-3 rounded-full bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-300">
+              <span>Home Cooking</span>
+            </div>
+            <p className="max-w-md text-sm leading-7 text-slate-400">
+              Kendi tariflerinizle topluluğa katılın. Malzemelerinizden tarif oluşturun, yayınlayın ve başkalarının favorileri arasında yer alın.
+            </p>
+            <div className="flex items-center gap-3">
+              <Link href="/about" className="text-sm text-slate-300 transition hover:text-white">
+                About
+              </Link>
+              <Link href="/contact" className="text-sm text-slate-300 transition hover:text-white">
+                Contact
+              </Link>
+              <Link href="/recibe" className="text-sm text-slate-300 transition hover:text-white">
+                Recibe
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">Quick links</h3>
+            <div className="mt-6 grid gap-3 text-sm text-slate-400">
+              <Link href="/login" className="transition hover:text-white">
+                Login
+              </Link>
+              <Link href="/register" className="transition hover:text-white">
+                Register
+              </Link>
+              <Link href="/kochen" className="transition hover:text-white">
+                Share recipe
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">Contact</h3>
+            <p className="mt-6 text-sm leading-7 text-slate-400">
+              info@homecooking.com
+              <br />
+              +90 555 123 45 67
+            </p>
+            <div className="mt-6 flex items-center gap-4">
+              <Link href="https://facebook.com" target="_blank" rel="noreferrer" className="rounded-2xl bg-slate-900 p-3 transition hover:bg-slate-800">
+                <Image src="/facebook.png" alt="Facebook" width={28} height={28} />
+              </Link>
+              <Link href="https://x.com" target="_blank" rel="noreferrer" className="rounded-2xl bg-slate-900 p-3 transition hover:bg-slate-800">
+                <Image src="/x.png" alt="X" width={28} height={28} />
+              </Link>
+              <Link href="https://instagram.com" target="_blank" rel="noreferrer" className="rounded-2xl bg-slate-900 p-3 transition hover:bg-slate-800">
+                <Image src="/instagram.png" alt="Instagram" width={28} height={28} />
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {/* Orta Bölüm: CONTACT US */}
-        <div className="flex-1 flex p-4">
-          <h4 className="text-3xl font-bold mb-4">Contact us</h4>
+        <div className="mt-16 border-t border-slate-800 pt-8 text-center text-sm text-slate-500">
+          © 2026 Home Cooking. All rights reserved.
         </div>
-      </div>
-
-      {/* İkinci Bölüm: Copyright Bilgisi */}
-
-      {/* Üçüncü Bölüm: Sosyal Medya İkonları */}
-      <div className="flex justify-center space-x-4">
-        <a
-          href="https://facebook.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="/facebook.png"
-            alt="Facebook"
-            className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg"
-          />
-        </a>
-        <div className="bg-white ">
-          <a href="https://x.com" target="_blank" rel="noopener noreferrer">
-            <img
-              src="/x.png"
-              alt="X"
-              className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg"
-            />
-          </a>
-        </div>
-
-        <a
-          href="https://instagram.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="/instagram.png"
-            alt="Instagram"
-            className="w-14 h-14 transition-transform duration-300 hover:scale-110 hover:shadow-lg"
-          />
-        </a>
-      </div>
-      <div className="text-center mb-4">
-        &copy; 2024 Your Company. All rights reserved.
       </div>
     </footer>
   );
