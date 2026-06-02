@@ -32,7 +32,7 @@ export default function Recibe() {
     setRecipe(null);
 
     try {
-      const res = await fetch('http://localhost:3001/ai/recommend', {
+      const res = await fetch('/api/ai/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ingredients }),

@@ -9,10 +9,9 @@ const Main = ({ children }) => {
         {/* Video bileşeni eklendi */}
         <div className="relative w-full h-screen">
   <img
-    src="/chef.webp " // Videonuzun yolu
-  
-  
-    className="w-full h-screen object-cover "
+    src="/chef.webp"
+    alt="Home cooking background"
+    className="w-full h-screen object-cover"
   />
   <div className="absolute top-1/2 left-4 transform -translate-y-1/2 flex flex-col space-y-4">
     <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
