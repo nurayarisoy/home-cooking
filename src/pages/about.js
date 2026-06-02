@@ -3,41 +3,44 @@ import Link from 'next/link';
 
 export default function About() {
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      
-      <Link href="/" className="block">
-        <img
-          className="h-16 w-auto animate-spin object-cover rounded-full transform hover:scale-175 transition-transform duration-300 
-               ml-4 mt-4"
-          src="/chef1.png"
-          alt="Logo"
-        />
-      </Link>
-                 
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-slate-100">
       <Head>
-        <title>About Us</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Über uns | Home Cooking</title>
       </Head>
-      <div className="md:w-1/2 h-64 md:h-auto bg-cover bg-center" style={{ backgroundImage: "url('/chef.png')" }}>
-        {/* Alternatif olarak, img etiketi kullanılabilir */}
-        {/* <img src="/path-to-your-image.jpg" alt="About Image" className="w-full h-full object-cover" /> */}
-      </div>
-      <div className="flex items-center justify-center w-full md:w-1/2 p-8">
-        <div className="w-full max-w-md">
-          <h2 className="text-3xl mb-4">About Us</h2>
-          <p className="mb-4">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.
-            Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris.
-          </p>
-          <p className="mb-4">
-            Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad
-            litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero.
-          </p>
-          <p>
-            Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis.
-            Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis,
-            luctus non, massa.
-          </p>
+
+      <div className="mx-auto max-w-6xl px-6 py-16 lg:px-8">
+        <div className="mb-10 flex items-center justify-between rounded-[2rem] bg-white p-8 shadow-2xl ring-1 ring-slate-200">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-orange-600">Über uns</p>
+            <h1 className="mt-4 text-4xl font-extrabold text-slate-950">Willkommen bei Home Cooking</h1>
+          </div>
+          <Link href="/" className="inline-flex items-center justify-center rounded-full bg-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-700">
+            Zur Startseite
+          </Link>
+        </div>
+
+        <div className="grid gap-10 lg:grid-cols-2">
+          <div className="rounded-[2rem] bg-white p-8 shadow-2xl ring-1 ring-slate-200">
+            <h2 className="text-2xl font-semibold text-slate-900">Unsere Mission</h2>
+            <p className="mt-5 text-slate-600 leading-7">
+              Home Cooking ist deine Plattform für kreative Rezepte, die du einfach zu Hause nachkochen kannst. Teile Fotos oder Videos deiner Gerichte und entdecke neue Ideen aus der Community.
+            </p>
+          </div>
+
+          <div className="rounded-[2rem] bg-white p-8 shadow-2xl ring-1 ring-slate-200">
+            <h2 className="text-2xl font-semibold text-slate-900">Was dich erwartet</h2>
+            <ul className="mt-5 space-y-4 text-slate-600">
+              <li className="rounded-3xl border border-orange-200 bg-orange-50 p-4">
+                <strong className="text-slate-900">Schnelle Rezeptideen</strong> basierend auf dem, was du zu Hause hast.
+              </li>
+              <li className="rounded-3xl border border-orange-200 bg-orange-50 p-4">
+                <strong className="text-slate-900">Community-Uploads</strong> mit Bildern und Videos.
+              </li>
+              <li className="rounded-3xl border border-orange-200 bg-orange-50 p-4">
+                <strong className="text-slate-900">Einfache Bedienung</strong> für Anfänger und erfahrene Hobbyköche.
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

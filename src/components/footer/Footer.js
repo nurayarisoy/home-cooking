@@ -11,42 +11,42 @@ const Footer = () => {
               <span>Home Cooking</span>
             </div>
             <p className="max-w-md text-sm leading-7 text-slate-400">
-              Kendi tariflerinizle topluluğa katılın. Malzemelerinizden tarif oluşturun, yayınlayın ve başkalarının favorileri arasında yer alın.
+              Schließe dich der Community an und teile deine Rezepte. Erstelle aus deinen Zutaten einfach neue Gerichte und präsentiere sie der Welt.
             </p>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <Link href="/about" className="text-sm text-slate-300 transition hover:text-white">
-                About
+                Über uns
               </Link>
               <Link href="/contact" className="text-sm text-slate-300 transition hover:text-white">
-                Contact
+                Kontakt
               </Link>
               <Link href="/recibe" className="text-sm text-slate-300 transition hover:text-white">
-                Recibe
+                Rezeptvorschlag
               </Link>
             </div>
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">Quick links</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">Schnellzugriff</h3>
             <div className="mt-6 grid gap-3 text-sm text-slate-400">
               <Link href="/login" className="transition hover:text-white">
-                Login
+                Anmeldung
               </Link>
               <Link href="/register" className="transition hover:text-white">
-                Register
+                Registrieren
               </Link>
               <Link href="/kochen" className="transition hover:text-white">
-                Share recipe
+                Rezept teilen
               </Link>
             </div>
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">Contact</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">Kontakt</h3>
             <p className="mt-6 text-sm leading-7 text-slate-400">
               info@homecooking.com
               <br />
-              +90 555 123 45 67
+              +49 30 1234 5678
             </p>
             <div className="mt-6 flex items-center gap-4">
               <Link href="https://facebook.com" target="_blank" rel="noreferrer" className="rounded-2xl bg-slate-900 p-3 transition hover:bg-slate-800">
@@ -63,7 +63,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-16 border-t border-slate-800 pt-8 text-center text-sm text-slate-500">
-          © 2026 Home Cooking. All rights reserved.
+          © 2026 Home Cooking. Alle Rechte vorbehalten.
         </div>
       </div>
     </footer>

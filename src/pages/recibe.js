@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import Link from 'next/link';
-import { XCircleIcon } from '@heroicons/react/24/solid';
 
 export default function Recibe() {
   const [ingredient, setIngredient] = useState('');
@@ -23,7 +21,7 @@ export default function Recibe() {
 
   const getRecipe = async () => {
     if (ingredients.length === 0) {
-      alert('Lütfen en az bir malzeme ekleyin.');
+      alert('Bitte füge mindestens eine Zutat hinzu.');
       return;
     }
 
@@ -39,7 +37,7 @@ export default function Recibe() {
       });
 
       if (!res.ok) {
-        throw new Error('Sunucu hatası');
+        throw new Error('Serverfehler');
       }
 
       const data = await res.json();
@@ -47,7 +45,7 @@ export default function Recibe() {
       setRecipe(data.recipe || null);
     } catch (error) {
       console.error(error);
-      alert('Bir hata oluştu.');
+      alert('Ein Fehler ist aufgetreten.');
     } finally {
       setLoading(false);
     }
@@ -61,110 +59,96 @@ export default function Recibe() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">🍳  Recipe Suggestion</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-100 py-16 px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-slate-200">
+        <h1 className="text-4xl font-extrabold text-slate-950 text-center mb-6">🍳 Rezeptvorschlag</h1>
+        <p className="mx-auto max-w-2xl text-center text-slate-600 leading-7 mb-10">
+          Gib deine Zutaten ein und erhalte ein passendes Rezept. Du kannst mehrere Zutaten hinzufügen und einzeln entfernen.
+        </p>
 
-      <div className="flex space-x-2 mb-4">
-        <input
-          type="text"
-          value={ingredient}
-          onChange={(e) => setIngredient(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Add ingredient..."
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={addIngredient}
-          className="bg-red-500 hover:bg-red-600 transition-colors text-white font-semibold px-4 py-2 rounded-lg"
-        >
-          Add
-        </button>
-      </div>
-
-      {ingredients.length > 0 ? (
-        <ul className="mb-4 flex flex-wrap gap-2">
-          {ingredients.map((item, index) => (
-            <li
-              key={index}
-              className="flex items-center bg-gray-100 border border-gray-200 px-3 py-1 rounded-full text-sm"
-            >
-              {item}
-              <button
-                onClick={() => removeIngredient(index)}
-                className="ml-2 text-gray-500 hover:text-red-500"
-                aria-label={`Remove ${item}`}
-              >
-                <XCircleIcon className="h-4 w-4" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-sm text-gray-400 mb-4">You haven&apos;t added any ingredients yet.</p>
-      )}
-
-      <button
-        onClick={getRecipe}
-        className="w-full bg-red-500 hover:bg-red-600 transition-colors text-white font-semibold py-2 rounded-lg mb-4"
-      >
-        Get Suggestion
-      </button>
-
-      {loading && <p className="text-center text-gray-500">Loading...</p>}
-
-      {suggestion && !recipe && (
-        <div className="bg-red-50 border border-red-400 text-red-800 p-4 rounded-lg mt-4">
-          <h2 className="font-bold mb-2"> Suggestion:</h2>
-          <p>{suggestion}</p>
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <input
+            type="text"
+            value={ingredient}
+            onChange={(e) => setIngredient(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Zutat hinzufügen..."
+            className="flex-1 rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+          />
+          <button
+            onClick={addIngredient}
+            className="rounded-3xl bg-orange-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-700"
+          >
+            Hinzufügen
+          </button>
         </div>
-      )}
 
-      {recipe && (
-        <div className="bg-white border border-gray-200 shadow-md p-6 rounded-lg mt-6">
-          <h2 className="text-2xl font-bold mb-2">{recipe.name}</h2>
-          {recipe.image && (
-           <img
-  src={recipe.image}
-  alt={recipe.name}
-  onError={(e) => {
-    e.target.onerror = null;
-    e.target.src = "/default.jpg";
-  }}
-  className="w-full h-auto rounded-lg shadow-md mb-4"
-/>
-
-            
-          )}
-          <h3 className="font-semibold text-lg">Ingredients:</h3>
-          <ul className="list-disc list-inside mb-4">
-            {recipe.ingredients.map((item, i) => (
-              <li key={i}>{item}</li>
+        {ingredients.length > 0 ? (
+          <ul className="mt-6 flex flex-wrap gap-3">
+            {ingredients.map((item, index) => (
+              <li key={index} className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-700">
+                {item}
+                <button
+                  onClick={() => removeIngredient(index)}
+                  className="rounded-full p-1 text-slate-500 transition hover:text-red-500"
+                  aria-label={`Entferne ${item}`}
+                >
+                  ✕
+                </button>
+              </li>
             ))}
           </ul>
-          <h3 className="font-semibold text-lg">Instructions:</h3>
-          <p className="text-gray-700">{recipe.instructions}</p>
-        </div>
-      )}
+        ) : (
+          <p className="mt-6 text-sm text-slate-400">Du hast noch keine Zutaten hinzugefügt.</p>
+        )}
 
-      <Link href="/" className="absolute top-4 left-4 z-10">
-        <img
-          className="h-16 w-16 animate-spin object-cover rounded-full transform hover:scale-110 transition-transform duration-300"
-          src="/chef1.png"
-          alt="Logo"
-        />
-      </Link>
+        <button
+          onClick={getRecipe}
+          className="mt-6 w-full rounded-3xl bg-orange-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-700"
+        >
+          Vorschlag erhalten
+        </button>
 
-      {/* Left Image (only for medium+ screens) */}
-      <div
-        className="hidden md:block md:w-1/2 bg-cover bg-center"
-        style={{ backgroundImage: "url('/chef.png')" }}
-      ></div>
+        {loading && <p className="mt-6 text-center text-slate-500">Lädt...</p>}
 
-      {/* Image for small screens */}
-      <div
-        className="md:hidden w-full h-64 bg-cover bg-center"
-        style={{ backgroundImage: "url('/chef.png')" }}
-      ></div>
+        {suggestion && !recipe && (
+          <div className="mt-8 rounded-[1.75rem] border border-orange-200 bg-orange-50 p-6 text-slate-700">
+            <h2 className="text-xl font-semibold mb-3">Vorschlag</h2>
+            <p>{suggestion}</p>
+          </div>
+        )}
+
+        {recipe && (
+          <div className="mt-8 rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6 shadow-sm">
+            <h2 className="text-2xl font-bold mb-4">{recipe.name}</h2>
+            {recipe.image && (
+              <img
+                src={recipe.image}
+                alt={recipe.name}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/default.jpg';
+                }}
+                className="w-full rounded-3xl object-cover shadow-sm mb-6"
+              />
+            )}
+            <div className="space-y-5 text-slate-700">
+              <div>
+                <h3 className="font-semibold text-lg">Zutaten</h3>
+                <ul className="list-disc list-inside mt-3 space-y-2">
+                  {recipe.ingredients.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Anleitung</h3>
+                <p className="mt-3 leading-7">{recipe.instructions}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -80,7 +80,7 @@ export default async function handler(req, res) {
   try {
     const sessionUser = getSessionUserFromRequest(req);
     if (req.method !== "GET" && !sessionUser) {
-      return res.status(401).json({ message: "Not authenticated." });
+      return res.status(401).json({ message: "Du musst angemeldet sein, um Rezepte zu veröffentlichen. Bitte melde dich an." });
     }
 
     if (isMongoConfigured()) {
@@ -88,8 +88,9 @@ export default async function handler(req, res) {
       const recipesCollection = mongoDb.collection("recipes");
 
       if (req.method === "GET") {
+        const query = req.query?.all === "1" ? {} : { published: 1 };
         const recipes = await recipesCollection
-          .find({}, { projection: { _id: 0 } })
+          .find(query, { projection: { _id: 0 } })
           .sort({ id: -1 })
           .toArray();
         return res.status(200).json(recipes);
@@ -122,7 +123,7 @@ export default async function handler(req, res) {
           });
           if (count >= PUBLISH_QUOTA) {
             return res.status(429).json({
-              message: `Yayinlama kotaniza ulastiniz (${PUBLISH_QUOTA} tarif). Birini taslaga alip tekrar deneyin.`,
+              message: `Du hast dein Veröffentlichungs-Limit erreicht (${PUBLISH_QUOTA} Rezepte). Lege eines als Entwurf ab und versuche es erneut.`,
             });
           }
         }
@@ -213,7 +214,7 @@ export default async function handler(req, res) {
             });
             if (count >= PUBLISH_QUOTA) {
               return res.status(429).json({
-                message: `Yayinlama kotaniza ulastiniz (${PUBLISH_QUOTA} tarif). Birini taslaga alip tekrar deneyin.`,
+                message: `Du hast dein Veröffentlichungs-Limit erreicht (${PUBLISH_QUOTA} Rezepte). Lege eines als Entwurf ab und versuche es erneut.`,
               });
             }
           }
@@ -315,6 +316,7 @@ export default async function handler(req, res) {
     const db = await getDb();
 
     if (req.method === "GET") {
+      const showAll = req.query?.all === "1";
       const recipes = await db.all(
         `
           SELECT
@@ -330,6 +332,7 @@ export default async function handler(req, res) {
             author_email,
             created_at
           FROM recipes
+          ${showAll ? "" : "WHERE published = 1"}
           ORDER BY id DESC
         `
       );
@@ -363,7 +366,7 @@ export default async function handler(req, res) {
         );
         if (count >= PUBLISH_QUOTA) {
           return res.status(429).json({
-            message: `Yayinlama kotaniza ulastiniz (${PUBLISH_QUOTA} tarif). Birini taslaga alip tekrar deneyin.`,
+            message: `Du hast dein Veröffentlichungs-Limit erreicht (${PUBLISH_QUOTA} Rezepte). Lege eines als Entwurf ab und versuche es erneut.`,
           });
         }
       }
@@ -465,7 +468,7 @@ export default async function handler(req, res) {
           );
           if (count >= PUBLISH_QUOTA) {
             return res.status(429).json({
-              message: `Yayinlama kotaniza ulastiniz (${PUBLISH_QUOTA} tarif). Birini taslaga alip tekrar deneyin.`,
+              message: `Du hast dein Veröffentlichungs-Limit erreicht (${PUBLISH_QUOTA} Rezepte). Lege eines als Entwurf ab und versuche es erneut.`,
             });
           }
         }

@@ -1,102 +1,120 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import api from "../utils/axios"; // 👈 Express backend için axios instance
+import api from "../utils/axios";
 
 const RegisterForm = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter(); // 👈 bunu ekle
-
-
-  // Konum alma
- 
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  console.log("Gönderilen data:", { username, email, password });
     try {
       const response = await api.post("/api/register", {
         username,
         email,
         password,
-        
       });
 
       alert(response.data.message);
-      router.push("/welcome"); // ✅ başarılı kayıt sonrası yönlendir
+      router.push("/welcome");
     } catch (error) {
-      const errorMsg =
-        error?.response?.data?.message || "Kayıt sırasında bir hata oluştu.";
+      const errorMsg = error?.response?.data?.message || "Bei der Registrierung ist ein Fehler aufgetreten.";
       alert(errorMsg);
       console.error("Error registering user:", error);
     }
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-100 py-16">
       <Head>
-        <title>Register</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Registrieren | Home Cooking</title>
       </Head>
 
-      <Link href="/" className="absolute top-4 left-4 z-10">
-        <img
-          className="h-16 w-16 animate-spin object-cover rounded-full transform hover:scale-110 transition-transform duration-300"
-          src="/chef1.png"
-          alt="Logo"
-        />
-      </Link>
-
-      <div
-        className="hidden md:block md:w-1/2 bg-cover bg-center"
-        style={{ backgroundImage: "url('/chef.png')" }}
-      ></div>
-
-      <div
-        className="md:hidden w-full h-64 bg-cover bg-center"
-        style={{ backgroundImage: "url('/chef.png')" }}
-      ></div>
-
-      <div className="flex flex-col justify-center items-center md:w-1/2 w-full p-8">
-        <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <div className="grid grid-cols-2 gap-4">
-           
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div className="rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-slate-200">
+            <h1 className="text-4xl font-extrabold text-slate-950">Erstelle dein Konto</h1>
+            <p className="mt-5 text-slate-600 leading-7">
+              Registriere dich, um eigene Rezepte mit Fotos oder Videos zu teilen und die Community zu inspirieren.
+            </p>
+            <div className="mt-10 rounded-[1.75rem] bg-orange-50 p-6 shadow-sm ring-1 ring-orange-200">
+              <h2 className="text-lg font-semibold text-slate-900">Was du bekommst</h2>
+              <ul className="mt-4 list-disc space-y-3 pl-5 text-slate-600">
+                <li>Eigene Rezepte veröffentlichen</li>
+                <li>Mediengestützte Beiträge</li>
+                <li>Neue Rezeptideen entdecken</li>
+              </ul>
+            </div>
           </div>
-          <button
-            type="submit"
-            className="w-full py-3 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Register
-          </button>
-        </form>
+
+          <div className="rounded-[2rem] bg-slate-950 p-10 shadow-2xl ring-1 ring-slate-900/20 text-white">
+            <div className="mb-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-orange-300">Neues Konto</p>
+              <h2 className="mt-4 text-3xl font-bold">Jetzt registrieren</h2>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium text-slate-200">
+                  Benutzername
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  placeholder="Benutzername"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  className="mt-3 w-full rounded-3xl border border-slate-800 bg-slate-950 px-5 py-3 text-white outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-200">
+                  E-Mail
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="email@beispiel.de"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="mt-3 w-full rounded-3xl border border-slate-800 bg-slate-950 px-5 py-3 text-white outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30"
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-slate-200">
+                  Passwort
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Mindestens 8 Zeichen"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="mt-3 w-full rounded-3xl border border-slate-800 bg-slate-950 px-5 py-3 text-white outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full rounded-3xl bg-orange-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-orange-400"
+              >
+                Registrieren
+              </button>
+            </form>
+            <div className="mt-6 text-sm text-slate-400">
+              Du hast bereits ein Konto?{' '}
+              <Link href="/login" className="text-orange-300 hover:text-orange-200">
+                Jetzt anmelden
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

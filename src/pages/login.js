@@ -1,12 +1,12 @@
 import { useState } from "react";
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import api from "../utils/axios"; // Backend axios instance
+import api from "../utils/axios";
 
 export default function Login() {
   const router = useRouter();
- const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -34,7 +34,7 @@ export default function Login() {
     setError(
       Object.values(updatedValidations).every(Boolean)
         ? ""
-        : "Password must meet all the requirements."
+        : "Das Passwort muss alle Anforderungen erfüllen."
     );
   };
 
@@ -42,129 +42,154 @@ export default function Login() {
     e.preventDefault();
 
     if (!Object.values(validations).every(Boolean)) {
-      setError("Password must meet all the requirements.");
+      setError("Das Passwort muss alle Anforderungen erfüllen.");
       return;
     }
 
     try {
-      const response = await api.post("/api/login", { email, password }); 
+      const response = await api.post("/api/login", { email, password });
       alert(response.data.message);
-
-      // ✅ Başarılı girişte kochen sayfasına yönlendir
       router.push("/kochen");
     } catch (err) {
-      const msg = err?.response?.data?.message || "Login failed";
+      const msg = err?.response?.data?.message || "Anmeldung fehlgeschlagen.";
       setError(msg);
     }
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      <Link href="/" className="block">
-        <img
-          className="h-16 w-auto animate-spin object-cover rounded-full transform hover:scale-175 transition-transform duration-300 ml-4 mt-4"
-          src="/chef1.png"
-          alt="Logo"
-        />
-      </Link>
-
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-slate-100">
       <Head>
-        <title>Login</title>
+        <title>Anmelden | Home Cooking</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div
-        className="hidden md:block md:w-1/2 bg-cover bg-center"
-        style={{ backgroundImage: "url('/chef.png')" }}
-      ></div>
-
-      <div
-        className="md:hidden w-full h-64 bg-cover bg-center"
-        style={{ backgroundImage: "url('/chef.png')" }}
-      ></div>
-
-      <div className="flex items-center justify-center w-full md:w-1/2">
-        <div className="w-full max-w-md">
-          <form className="bg-blackshadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
-                Name
-              </label>
-              <input
-                id="name"
-                type="name"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
+      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-12 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-950 p-10 text-white shadow-2xl shadow-slate-900/10 lg:flex-1 lg:p-14">
+          <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-orange-500/20 to-transparent" />
+          <div className="relative z-10">
+            <div className="mb-8 inline-flex items-center gap-3 rounded-full bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-200 shadow-sm ring-1 ring-orange-300/20">
+              <span>Rezeptideen</span>
             </div>
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
+            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+              Bereit, dein Rezept zu teilen?
+            </h1>
+            <p className="mt-6 max-w-xl text-base leading-8 text-slate-300">
+              Melde dich an und präsentiere deine besten Gerichte mit Fotos oder Videos der Community.
+            </p>
 
-            <div className="mb-6">
-              <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="******************"
-                value={password}
-                onChange={handlePasswordChange}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline ${
-                  error ? "border-red-500" : ""
-                }`}
-              />
-              {error && <p className="text-red-500 text-xs italic">{error}</p>}
-              <div className="mt-2">
-                <p className={`text-sm ${validations.minLength ? "text-green-500" : "text-gray-500"}`}>
-                  {validations.minLength ? "✓" : "✗"} Minimum 8 characters
+            <div className="mt-10 grid gap-5 sm:grid-cols-2">
+              <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-900/10">
+                <p className="text-xs uppercase tracking-[0.3em] text-orange-300">Gemüse Rezept</p>
+                <h2 className="mt-4 text-xl font-semibold text-white">Gerösteter Blumenkohl</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  Ein würziges Gemüsegericht mit Zucchini, Blumenkohl und Brokkoli.
                 </p>
-                <p className={`text-sm ${validations.hasUpperCase ? "text-green-500" : "text-gray-500"}`}>
-                  {validations.hasUpperCase ? "✓" : "✗"} At least one uppercase letter
-                </p>
-                <p className={`text-sm ${validations.hasLowerCase ? "text-green-500" : "text-gray-500"}`}>
-                  {validations.hasLowerCase ? "✓" : "✗"} At least one lowercase letter
-                </p>
-                <p className={`text-sm ${validations.hasNumber ? "text-green-500" : "text-gray-500"}`}>
-                  {validations.hasNumber ? "✓" : "✗"} At least one number
-                </p>
-                <p className={`text-sm ${validations.hasSpecialChar ? "text-green-500" : "text-gray-500"}`}>
-                  {validations.hasSpecialChar ? "✓" : "✗"} At least one special character
+              </div>
+              <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-900/10">
+                <p className="text-xs uppercase tracking-[0.3em] text-orange-300">Zweites Rezept</p>
+                <h2 className="mt-4 text-xl font-semibold text-white">Pilz-Spinat-Auflauf</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  Teile ein schnelles Gericht mit Video- oder Bildsupport.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Sign In
-              </button>
-              <Link
-                href="/forgot-password"
-                className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              >
-                Forgot Password?
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Link href="/register" className="inline-flex items-center justify-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-600">
+                Jetzt registrieren
+              </Link>
+              <Link href="/kochen" className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
+                Rezepte entdecken
               </Link>
             </div>
-          </form>
-          <p className="text-center text-gray-500 text-xs">&copy;2023 Acme Corp. All rights reserved.</p>
+          </div>
+          <div className="absolute -right-10 bottom-10 h-40 w-40 rounded-full bg-orange-500/20 blur-3xl" />
+        </div>
+
+        <div className="mt-10 lg:mt-0 lg:flex-[0.9]">
+          <div className="rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-slate-900/5 ring-1 ring-slate-200">
+            <div className="mb-8 flex items-center gap-4">
+              <div className="relative h-14 w-14 overflow-hidden rounded-3xl bg-orange-100">
+                <Image src="/chef1.png" alt="Home Cooking logo" fill className="object-cover" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Bei Home Cooking anmelden</p>
+                <p className="text-sm text-slate-500">Benutzername oder E-Mail und Passwort verwenden.</p>
+              </div>
+            </div>
+
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
+                  E-Mail
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="email@beispiel.de"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-3 text-slate-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
+                  Passwort
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Mindestens 8 Zeichen"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  className={`w-full rounded-3xl border px-5 py-3 text-slate-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200 ${
+                    error ? "border-red-500" : "border-slate-200"
+                  }`}
+                  required
+                />
+                {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+              </div>
+
+              <div className="grid gap-3 rounded-3xl bg-slate-50 p-4 text-sm text-slate-600">
+                <p className="font-semibold text-slate-900">Passwortanforderungen</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <span className={validations.minLength ? "text-emerald-600" : "text-slate-400"}>
+                    {validations.minLength ? "✓" : "○"} Mindestens 8 Zeichen
+                  </span>
+                  <span className={validations.hasUpperCase ? "text-emerald-600" : "text-slate-400"}>
+                    {validations.hasUpperCase ? "✓" : "○"} Großbuchstabe
+                  </span>
+                  <span className={validations.hasLowerCase ? "text-emerald-600" : "text-slate-400"}>
+                    {validations.hasLowerCase ? "✓" : "○"} Kleinbuchstabe
+                  </span>
+                  <span className={validations.hasNumber ? "text-emerald-600" : "text-slate-400"}>
+                    {validations.hasNumber ? "✓" : "○"} Zahl
+                  </span>
+                  <span className={validations.hasSpecialChar ? "text-emerald-600" : "text-slate-400"}>
+                    {validations.hasSpecialChar ? "✓" : "○"} Sonderzeichen
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full rounded-3xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-300/40 transition hover:bg-orange-700"
+              >
+                Anmelden
+              </button>
+            </form>
+
+            <div className="mt-6 flex items-center justify-between text-sm text-slate-500">
+              <Link href="/forgot-password" className="hover:text-slate-700">
+                Passwort vergessen?
+              </Link>
+              <Link href="/register" className="font-semibold text-orange-600 hover:text-orange-700">
+                Konto erstellen
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

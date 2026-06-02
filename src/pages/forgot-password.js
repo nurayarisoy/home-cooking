@@ -8,67 +8,56 @@ export default function ForgotPassword() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Şifre sıfırlama işlemi burada gerçekleştirilecek
     console.log('Password reset request for:', email);
-    setMessage('If an account with that email exists, a password reset link has been sent.');
+    setMessage('Wenn ein Konto mit dieser E-Mail existiert, wurde ein Zurücksetzungslink gesendet.');
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center min-h-screen bg-gray-100">
-      <Link href="/" className="block">
-        <img
-          className="h-16 w-auto animate-spin object-cover rounded-full transform hover:scale-175 transition-transform duration-300 
-               ml-4 mt-4"
-          src="/chef1.png"
-          alt="Logo"
-        />
-      </Link>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-100 py-16">
       <Head>
-        <title>Forgot Password</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Passwort vergessen | Home Cooking</title>
       </Head>
-      <div className="md:w-1/2 bg-cover bg-center hidden md:block"
-           style={{ backgroundImage: "url('/chef.png')" }}>
-        {/* Büyük ekranlarda (md ve üzeri), arka plan görseli */}
-      </div>
-      <div className="w-full h-64 bg-cover bg-center md:hidden"
-           style={{ backgroundImage: "url('/chef.png')" }}>
-        {/* Küçük ekranlarda (md altı), arka plan görseli */}
-      </div>
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900">Forgot Password</h2>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">Email address</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div className="rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-slate-200">
+            <h1 className="text-4xl font-extrabold text-slate-950">Passwort zurücksetzen</h1>
+            <p className="mt-5 text-slate-600 leading-7">
+              Gib die E-Mail-Adresse deines Kontos ein, um einen Link zum Zurücksetzen des Passworts zu erhalten.
+            </p>
+          </div>
+
+          <div className="rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-slate-200">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                  E-Mail-Adresse
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="email@beispiel.de"
+                  className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-5 py-3 text-slate-900 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full rounded-3xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-700"
+              >
+                Link senden
+              </button>
+            </form>
+            {message && <p className="mt-6 text-sm text-emerald-600">{message}</p>}
+            <div className="mt-6 text-center text-sm text-slate-500">
+              <Link href="/login" className="font-semibold text-orange-600 hover:text-orange-700">
+                Zurück zur Anmeldung
+              </Link>
             </div>
           </div>
-          <div>
-            <button
-              type="submit"
-              className="group relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Send Password Reset Link
-            </button>
-          </div>
-        </form>
-        {message && <p className="mt-2 text-sm text-green-600">{message}</p>}
-        <div className="text-center">
-          <Link href="/login" legacyBehavior>
-            <a className="font-medium text-blue-600 hover:text-blue-500">
-              Back to Login
-            </a>
-          </Link>
         </div>
       </div>
     </div>
