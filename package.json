@@ -22,7 +22,7 @@
     "formidable": "^3.5.4",
     "leaflet": "^1.9.4",
     "mongodb": "^6.8.0",
-    "mongoose": "^8.5.1",
+    "mongoose": "^8.22.1",
     "next": "^15.5.12",
     "postcss-preset-env": "^9.4.0",
     "react": "^18",
